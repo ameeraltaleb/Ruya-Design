@@ -65,5 +65,4 @@ export const NAVBAR_LINKS = [
   { name: "من نحن", href: "#about" },
   { name: "خدماتنا", href: "#services" },
   { name: "أعمالنا", href: "#portfolio" },
-  { name: "تواصل معنا", href: "#contact" },
 ];

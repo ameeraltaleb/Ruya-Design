@@ -76,9 +76,14 @@ export default function Navbar() {
                 </a>
               ))}
             </div>
-            <button className="bg-ruya-yellow text-ruya-purple px-6 py-2.5 rounded-full font-black text-xs uppercase shadow-[0_4px_0_rgb(200,140,30)] active:translate-y-1 transition-all">
-              ابدأ الآن
-            </button>
+            {visibility.contact && (
+              <a
+                href="#contact"
+                className="bg-ruya-yellow text-ruya-purple px-6 py-2.5 rounded-full font-black text-xs uppercase shadow-[0_4px_0_rgb(200,140,30)] active:translate-y-1 transition-all"
+              >
+                تواصل معنا
+              </a>
+            )}
           </div>
 
           <div className="md:hidden">
@@ -109,6 +114,15 @@ export default function Navbar() {
               {link.name}
             </a>
           ))}
+          {visibility.contact && (
+            <a
+              href="#contact"
+              onClick={() => setIsOpen(false)}
+              className="bg-ruya-yellow text-ruya-purple block text-center px-3 py-4 mt-2 rounded-md font-black text-base uppercase shadow-[0_4px_0_rgb(200,140,30)] active:translate-y-1 transition-all"
+            >
+              تواصل معنا
+            </a>
+          )}
         </motion.div>
       )}
     </motion.nav>
