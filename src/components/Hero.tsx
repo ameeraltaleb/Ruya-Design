@@ -62,7 +62,7 @@ export default function Hero() {
   return (
     <section
       id="home"
-      className="relative min-h-screen flex items-center pt-24 pb-16 lg:pb-0 overflow-hidden bg-ruya-bg"
+      className="relative min-h-screen flex items-center pt-24 pb-16 lg:pb-24 overflow-hidden bg-ruya-bg"
     >
       {/* Background decoration */}
       <div className="absolute top-0 left-0 w-full h-full opacity-50 pointer-events-none">

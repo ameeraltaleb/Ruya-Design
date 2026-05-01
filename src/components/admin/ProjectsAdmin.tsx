@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   collection,
   onSnapshot,
@@ -7,8 +7,9 @@ import {
   doc,
   updateDoc,
 } from "firebase/firestore";
-import { db, auth } from "../../lib/firebase";
-import { Plus, Trash2, Edit2, X } from "lucide-react";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { db, auth, storage } from "../../lib/firebase";
+import { Plus, Trash2, Edit2, X, Upload } from "lucide-react";
 
 interface Project {
   id: string;
@@ -50,6 +51,10 @@ export default function ProjectsAdmin() {
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("");
   const [image, setImage] = useState("");
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const q = collection(db, "projects");
@@ -73,23 +78,47 @@ export default function ProjectsAdmin() {
     return () => unsubscribe();
   }, []);
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setImageFile(e.target.files[0]);
+      // Clear URL input if file is selected
+      setImage("");
+    }
+  };
+
+  const uploadImageIfSelected = async (): Promise<string> => {
+    if (!imageFile) return image; // return existing URL if no file
+
+    const fileRef = ref(storage, `portfolio/${Date.now()}_${imageFile.name}`);
+    await uploadBytes(fileRef, imageFile);
+    return await getDownloadURL(fileRef);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!image && !imageFile && !editingId) {
+      alert("الرجاء إضافة صورة أو رابط الصورة!");
+      return;
+    }
+    
     try {
+      setIsUploading(true);
+      const finalImageUrl = await uploadImageIfSelected();
+
       const ts = Date.now();
       if (editingId) {
         const oldProj = projects.find((p) => p.id === editingId);
         await updateDoc(doc(db, "projects", editingId), {
           title,
           category,
-          image,
+          image: finalImageUrl || oldProj?.image,
           createdAt: oldProj?.createdAt || ts,
         });
       } else {
         await addDoc(collection(db, "projects"), {
           title,
           category,
-          image,
+          image: finalImageUrl,
           createdAt: ts,
         });
       }
@@ -97,6 +126,8 @@ export default function ProjectsAdmin() {
     } catch (error) {
       alert("حدث خطأ أثناء حفظ البيانات: " + (error instanceof Error ? error.message : ""));
       handleFirestoreError(error, OperationType.WRITE, "projects");
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -114,7 +145,9 @@ export default function ProjectsAdmin() {
     setTitle(p.title);
     setCategory(p.category);
     setImage(p.image);
+    setImageFile(null);
     setEditingId(p.id);
+    if (fileInputRef.current) fileInputRef.current.value = "";
     setIsModalOpen(true);
   };
 
@@ -122,7 +155,9 @@ export default function ProjectsAdmin() {
     setTitle("");
     setCategory("");
     setImage("");
+    setImageFile(null);
     setEditingId(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
     setIsModalOpen(false);
   };
 
@@ -218,31 +253,67 @@ export default function ProjectsAdmin() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
-                  رابط الصورة (URL)
+                  صورة العمل
                 </label>
-                <input
-                  type="url"
-                  required
-                  value={image}
-                  onChange={(e) => setImage(e.target.value)}
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-ruya-yellow text-left"
-                  dir="ltr"
-                  placeholder="https://..."
-                />
+                <div className="space-y-3">
+                  <div className="relative">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      ref={fileInputRef}
+                      onChange={handleFileChange}
+                      className="hidden"
+                      id="file-upload"
+                    />
+                    <label
+                      htmlFor="file-upload"
+                      className="flex items-center justify-center gap-2 w-full bg-white/5 border border-dashed border-white/20 rounded-xl px-4 py-6 text-gray-300 hover:bg-white/10 hover:border-white/40 transition-all cursor-pointer"
+                    >
+                      <Upload className="w-5 h-5 text-ruya-yellow" />
+                      <span>{imageFile ? imageFile.name : "رفع صورة من الجهاز"}</span>
+                    </label>
+                  </div>
+                  
+                  <div className="flex items-center gap-3 w-full">
+                    <div className="h-px bg-white/10 flex-1"></div>
+                    <span className="text-gray-500 text-xs">أو</span>
+                    <div className="h-px bg-white/10 flex-1"></div>
+                  </div>
+
+                  <input
+                    type="url"
+                    value={image}
+                    onChange={(e) => setImage(e.target.value)}
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-ruya-yellow text-left"
+                    dir="ltr"
+                    placeholder="رابط مباشر للصورة (https://...)"
+                  />
+                </div>
               </div>
               <div className="pt-4 flex justify-end gap-3">
                 <button
                   type="button"
                   onClick={closeModal}
-                  className="px-6 py-2 rounded-xl text-gray-300 hover:bg-white/5 transition-colors"
+                  disabled={isUploading}
+                  className="px-6 py-2 rounded-xl text-gray-300 hover:bg-white/5 transition-colors disabled:opacity-50"
                 >
                   إلغاء
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-2 bg-ruya-yellow text-ruya-bg font-bold rounded-xl hover:bg-yellow-400 transition-colors"
+                  disabled={isUploading}
+                  className="px-6 py-2 bg-ruya-yellow text-ruya-bg font-bold rounded-xl hover:bg-yellow-400 transition-colors disabled:opacity-50 flex items-center gap-2"
                 >
-                  {editingId ? "حفظ التعديلات" : "إضافة"}
+                  {isUploading ? (
+                     <>
+                        <div className="w-4 h-4 border-2 border-ruya-bg border-t-transparent rounded-full animate-spin"></div>
+                        جاري الرفع...
+                     </>
+                  ) : editingId ? (
+                    "حفظ التعديلات"
+                  ) : (
+                    "إضافة"
+                  )}
                 </button>
               </div>
             </form>
