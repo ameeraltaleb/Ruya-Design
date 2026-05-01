@@ -62,7 +62,7 @@ export default function Hero() {
   return (
     <section
       id="home"
-      className="relative min-h-screen flex items-center pt-24 overflow-hidden bg-ruya-bg"
+      className="relative min-h-screen flex items-center pt-24 pb-16 lg:pb-0 overflow-hidden bg-ruya-bg"
     >
       {/* Background decoration */}
       <div className="absolute top-0 left-0 w-full h-full opacity-50 pointer-events-none">
@@ -70,7 +70,7 @@ export default function Hero() {
         <div className="absolute bottom-[10%] right-[10%] w-[40%] h-[40%] bg-ruya-yellow/5 rounded-full blur-[100px]" />
       </div>
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full z-10 grid lg:grid-cols-12 gap-12 items-center">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full z-10 grid lg:grid-cols-12 gap-8 lg:gap-12 items-center">
         <div className="lg:col-span-7">
           <motion.div
             initial={{ opacity: 0, x: -20 }}
@@ -156,7 +156,7 @@ export default function Hero() {
           </motion.div>
         </div>
 
-        <div className="lg:col-span-5 mt-12 lg:mt-0">
+        <div className="lg:col-span-5 lg:mt-0">
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
