@@ -120,6 +120,7 @@ export default function ServicesAdmin() {
       }
       closeModal();
     } catch (error) {
+      alert("حدث خطأ أثناء حفظ البيانات: " + (error instanceof Error ? error.message : ""));
       handleFirestoreError(error, OperationType.WRITE, "services");
     }
   };
@@ -250,7 +251,7 @@ export default function ServicesAdmin() {
                   <label className="block text-sm font-medium text-gray-300 mb-2">
                     الأيقونة
                   </label>
-                  <div className="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-4 md:grid-cols-3 gap-2">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
                     {AVAILABLE_ICONS.map((i) => {
                       const IconComp = i.icon;
                       return (

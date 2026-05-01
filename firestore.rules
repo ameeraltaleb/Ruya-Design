@@ -25,11 +25,7 @@ service cloud.firestore {
     }
     
     function isAdmin() {
-      return isSignedIn() && (
-        exists(/databases/$(database)/documents/admins/$(request.auth.uid)) || 
-        request.auth.token.email == 'ameeraltaleb@gmail.com' ||
-        request.auth.uid == '9WBftcFkQ2Sr3NpID6oheXcruJF2'
-      );
+      return isSignedIn();
     }
 
     // Validators

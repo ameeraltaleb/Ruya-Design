@@ -9,7 +9,6 @@ import About from "./components/About";
 import Services from "./components/Services";
 import Portfolio from "./components/Portfolio";
 import Testimonials from "./components/Testimonials";
-import Clients from "./components/Clients";
 import Contact from "./components/Contact";
 import WhatsApp from "./components/WhatsApp";
 import { motion } from "motion/react";
@@ -28,7 +27,6 @@ export default function App() {
 
       <main>
         {visibility.hero && <Hero />}
-        {visibility.clients && <Clients />}
         {visibility.about && <About />}
         {visibility.services && <Services />}
         {visibility.portfolio && <Portfolio />}

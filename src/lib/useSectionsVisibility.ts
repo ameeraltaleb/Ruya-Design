@@ -4,7 +4,6 @@ import { db } from "./firebase";
 
 export interface SectionsVisibility {
   hero: boolean;
-  clients: boolean;
   about: boolean;
   services: boolean;
   stats: boolean;
@@ -15,7 +14,6 @@ export interface SectionsVisibility {
 
 export const DEFAULT_VISIBILITY: SectionsVisibility = {
   hero: true,
-  clients: true,
   about: true,
   services: true,
   stats: true,

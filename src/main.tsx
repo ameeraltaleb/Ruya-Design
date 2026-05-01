@@ -12,7 +12,6 @@ import ServicesAdmin from "./components/admin/ServicesAdmin.tsx";
 import AboutAdmin from "./components/admin/AboutAdmin.tsx";
 import StatsAdmin from "./components/admin/StatsAdmin.tsx";
 import TestimonialsAdmin from "./components/admin/TestimonialsAdmin.tsx";
-import ClientsAdmin from "./components/admin/ClientsAdmin.tsx";
 import ContactAdmin from "./components/admin/ContactAdmin.tsx";
 import Login from "./components/admin/Login.tsx";
 import "./index.css";
@@ -30,7 +29,6 @@ createRoot(document.getElementById("root")!).render(
           <Route path="services" element={<ServicesAdmin />} />
           <Route path="stats" element={<StatsAdmin />} />
           <Route path="testimonials" element={<TestimonialsAdmin />} />
-          <Route path="clients" element={<ClientsAdmin />} />
           <Route path="contact" element={<ContactAdmin />} />
           <Route path="settings" element={<SettingsAdmin />} />
           <Route path="messages" element={<MessagesAdmin />} />

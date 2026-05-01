@@ -220,7 +220,6 @@ export default function SettingsAdmin() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {[
               { key: "hero", label: "الواجهة الرئيسية" },
-              { key: "clients", label: "شركاء النجاح" },
               { key: "about", label: "من نحن" },
               { key: "services", label: "خدماتنا" },
               { key: "stats", label: "الإحصائيات" },

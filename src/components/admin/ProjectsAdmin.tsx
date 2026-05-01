@@ -95,6 +95,7 @@ export default function ProjectsAdmin() {
       }
       closeModal();
     } catch (error) {
+      alert("حدث خطأ أثناء حفظ البيانات: " + (error instanceof Error ? error.message : ""));
       handleFirestoreError(error, OperationType.WRITE, "projects");
     }
   };
