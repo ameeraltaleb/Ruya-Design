@@ -208,9 +208,9 @@ export default function ServicesAdmin() {
 
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-ruya-purple border border-white/10 rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden">
-            <div className="flex justify-between items-center p-6 border-b border-white/10">
-              <h2 className="text-xl font-bold text-white">
+          <div className="bg-ruya-purple border border-white/10 rounded-2xl w-full max-w-lg shadow-2xl flex flex-col max-h-[95vh]">
+            <div className="flex justify-between items-center p-4 md:p-6 border-b border-white/10 shrink-0">
+              <h2 className="text-lg md:text-xl font-bold text-white">
                 {editingId ? "تعديل الخدمة" : "إضافة خدمة جديدة"}
               </h2>
               <button
@@ -220,72 +220,74 @@ export default function ServicesAdmin() {
                 <X className="w-5 h-5" />
               </button>
             </div>
-            <form onSubmit={handleSubmit} className="p-6 space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  عنوان الخدمة
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-ruya-yellow"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  وصف الخدمة
-                </label>
-                <textarea
-                  required
-                  rows={3}
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-ruya-yellow resize-none"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  الأيقونة
-                </label>
-                <div className="grid grid-cols-3 gap-2">
-                  {AVAILABLE_ICONS.map((i) => {
-                    const IconComp = i.icon;
-                    return (
-                      <button
-                        key={i.id}
-                        type="button"
-                        onClick={() => setIcon(i.id)}
-                        className={`flex flex-col items-center gap-2 p-3 rounded-lg border transition-colors ${
-                          icon === i.id
-                            ? "border-ruya-yellow bg-ruya-yellow/10 text-ruya-yellow"
-                            : "border-white/10 bg-white/5 text-gray-400 hover:bg-white/10"
-                        }`}
-                      >
-                        <IconComp size={24} />
-                        <span className="text-[10px] font-bold">{i.label}</span>
-                      </button>
-                    );
-                  })}
+            <div className="overflow-y-auto p-4 md:p-6 custom-scrollbar">
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    عنوان الخدمة
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-ruya-yellow"
+                  />
                 </div>
-              </div>
-              <div className="pt-4 flex justify-end gap-3 border-t border-white/10">
-                <button
-                  type="button"
-                  onClick={closeModal}
-                  className="px-6 py-2 rounded-xl text-gray-300 hover:bg-white/5 transition-colors"
-                >
-                  إلغاء
-                </button>
-                <button
-                  type="submit"
-                  className="px-6 py-2 bg-ruya-yellow text-ruya-bg font-bold rounded-xl hover:bg-yellow-400 transition-colors"
-                >
-                  {editingId ? "حفظ التعديلات" : "إضافة"}
-                </button>
-              </div>
-            </form>
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    وصف الخدمة
+                  </label>
+                  <textarea
+                    required
+                    rows={3}
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-ruya-yellow resize-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    الأيقونة
+                  </label>
+                  <div className="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-4 md:grid-cols-3 gap-2">
+                    {AVAILABLE_ICONS.map((i) => {
+                      const IconComp = i.icon;
+                      return (
+                        <button
+                          key={i.id}
+                          type="button"
+                          onClick={() => setIcon(i.id)}
+                          className={`flex flex-col items-center justify-center gap-2 p-3 rounded-lg border transition-colors ${
+                            icon === i.id
+                              ? "border-ruya-yellow bg-ruya-yellow/10 text-ruya-yellow"
+                              : "border-white/10 bg-white/5 text-gray-400 hover:bg-white/10"
+                          }`}
+                        >
+                          <IconComp size={24} />
+                          <span className="text-[10px] font-bold text-center">{i.label}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+                <div className="pt-4 flex justify-end gap-3 border-t border-white/10 mt-6">
+                  <button
+                    type="button"
+                    onClick={closeModal}
+                    className="px-4 md:px-6 py-2 rounded-xl text-gray-300 hover:bg-white/5 transition-colors text-sm md:text-base"
+                  >
+                    إلغاء
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-4 md:px-6 py-2 bg-ruya-yellow text-ruya-bg font-bold rounded-xl hover:bg-yellow-400 transition-colors text-sm md:text-base"
+                  >
+                    {editingId ? "حفظ التعديلات" : "إضافة"}
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
       )}
