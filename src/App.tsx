@@ -42,11 +42,19 @@ export default function App() {
             <div>
               <div className="mb-6 flex justify-end">
                 {logoUrl ? (
-                  <img
-                    src={logoUrl}
-                    alt="Logo"
-                    className="h-16 w-auto object-contain drop-shadow-sm ml-auto"
-                  />
+                  logoUrl.startsWith("http") ||
+                  logoUrl.startsWith("data:image") ||
+                  logoUrl.startsWith("/") ? (
+                    <img
+                      src={logoUrl}
+                      alt="Logo"
+                      className="h-16 w-auto object-contain drop-shadow-sm ml-auto"
+                    />
+                  ) : (
+                    <span className="text-3xl font-extrabold text-white tracking-wider font-sans ml-auto">
+                      {logoUrl}
+                    </span>
+                  )
                 ) : (
                   <div className="h-16 w-40 flex items-center justify-center border-2 border-dashed border-white/10 rounded-xl bg-white/5 ml-auto">
                     <span className="text-white/20 text-[10px] font-bold">

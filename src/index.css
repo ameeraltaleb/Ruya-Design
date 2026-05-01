@@ -10,6 +10,9 @@
 }
 
 @layer base {
+  :root {
+    color-scheme: light;
+  }
   html {
     direction: rtl;
     font-family: var(--font-sans);
