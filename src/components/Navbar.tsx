@@ -3,11 +3,23 @@ import { useState, useEffect } from "react";
 import { NAVBAR_LINKS } from "../constants";
 import { Menu, X } from "lucide-react";
 import { useLogo } from "../lib/useLogo";
+import { useSectionsVisibility } from "../lib/useSectionsVisibility";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const { scrollY } = useScroll();
   const logoUrl = useLogo();
+  const { visibility } = useSectionsVisibility();
+
+  // Filter links based on visibility
+  const visibleLinks = NAVBAR_LINKS.filter((link) => {
+    if (link.href === "#home") return visibility.hero;
+    if (link.href === "#about") return visibility.about;
+    if (link.href === "#services") return visibility.services;
+    if (link.href === "#portfolio") return visibility.portfolio;
+    if (link.href === "#contact") return visibility.contact;
+    return true;
+  });
 
   const backgroundColor = useTransform(
     scrollY,
@@ -58,7 +70,7 @@ export default function Navbar() {
 
           <div className="hidden md:flex items-center gap-8">
             <div className="flex items-baseline space-x-8 space-x-reverse">
-              {NAVBAR_LINKS.map((link) => (
+              {visibleLinks.map((link) => (
                 <a
                   key={link.name}
                   href={link.href}
@@ -91,7 +103,7 @@ export default function Navbar() {
           animate={{ opacity: 1, height: "auto" }}
           className="md:hidden bg-ruya-purple px-2 pt-2 pb-3 space-y-1 sm:px-3 border-t border-white/10"
         >
-          {NAVBAR_LINKS.map((link) => (
+          {visibleLinks.map((link) => (
             <a
               key={link.name}
               href={link.href}

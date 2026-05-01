@@ -24,7 +24,7 @@ enum OperationType {
 function handleFirestoreError(
   error: unknown,
   operationType: OperationType,
-  path: string | null
+  path: string | null,
 ) {
   const errInfo = {
     error: error instanceof Error ? error.message : String(error),
@@ -38,7 +38,7 @@ function handleFirestoreError(
 
 export default function ClientsAdmin() {
   const [data, setData] = useState<ClientItem[]>(
-    DEFAULT_CLIENTS.map((url, i) => ({ id: i, url }))
+    DEFAULT_CLIENTS.map((url, i) => ({ id: i, url })),
   );
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -53,7 +53,7 @@ export default function ClientsAdmin() {
           if (val) {
             const parsed = JSON.parse(val);
             if (Array.isArray(parsed)) {
-              if (typeof parsed[0] === 'string') {
+              if (typeof parsed[0] === "string") {
                 setData(parsed.map((url, i) => ({ id: Date.now() + i, url })));
               } else {
                 setData(parsed);
@@ -113,9 +113,14 @@ export default function ClientsAdmin() {
         <form onSubmit={handleSave} className="space-y-6">
           <div className="space-y-4">
             {data.map((item, idx) => (
-              <div key={item.id} className="p-4 border border-white/10 rounded-xl bg-white/5 flex gap-4 items-center">
+              <div
+                key={item.id}
+                className="p-4 border border-white/10 rounded-xl bg-white/5 flex gap-4 items-center"
+              >
                 <div className="flex-1">
-                  <label className="text-xs text-gray-400 block mb-1">رابط الشعار (URL)</label>
+                  <label className="text-xs text-gray-400 block mb-1">
+                    رابط الشعار (URL)
+                  </label>
                   <input
                     type="url"
                     value={item.url}
@@ -126,7 +131,11 @@ export default function ClientsAdmin() {
                   />
                   {item.url && (
                     <div className="mt-2 h-12 bg-white/10 rounded inline-flex p-2">
-                      <img src={item.url} alt="معاينة" className="h-full object-contain mix-blend-multiply" />
+                      <img
+                        src={item.url}
+                        alt="معاينة"
+                        className="h-full object-contain mix-blend-multiply"
+                      />
                     </div>
                   )}
                 </div>

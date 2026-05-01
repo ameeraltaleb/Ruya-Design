@@ -9,7 +9,7 @@ export default function About() {
     title: "من نحن؟",
     description: "جاري التحميل...",
     features: [] as string[],
-    image_url: ""
+    image_url: "",
   });
 
   useEffect(() => {
@@ -23,7 +23,8 @@ export default function About() {
           // Default
           setData({
             title: "من نحن؟",
-            description: "نحن في \"رؤية\" للتصميم والطباعة لسنا مجرد وكالة دعاية وإعلان، بل نحن شركاء نجاحك. نؤمن بأن كل علامة تجارية لها قصة فريدة تستحق أن تُروى بأفضل صورة ممكنة. نجمع بين الإبداع الفني والخبرة التقنية لنقدم لك حلولاً متكاملة تبرز هوية مشروعك.",
+            description:
+              'نحن في "رؤية" للتصميم والطباعة لسنا مجرد وكالة دعاية وإعلان، بل نحن شركاء نجاحك. نؤمن بأن كل علامة تجارية لها قصة فريدة تستحق أن تُروى بأفضل صورة ممكنة. نجمع بين الإبداع الفني والخبرة التقنية لنقدم لك حلولاً متكاملة تبرز هوية مشروعك.',
             features: [
               "فريق عمل مبدع ومحترف",
               "أحدث تقنيات الطباعة",
@@ -32,7 +33,8 @@ export default function About() {
               "جودة عالية في التنفيذ",
               "خدمة عملاء متميزة",
             ],
-            image_url: "https://images.unsplash.com/photo-1600132806370-bf17e65e942f?q=80&w=2194&auto=format&fit=crop"
+            image_url:
+              "https://images.unsplash.com/photo-1600132806370-bf17e65e942f?q=80&w=2194&auto=format&fit=crop",
           });
         }
       } catch (error) {

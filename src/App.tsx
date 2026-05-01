@@ -15,23 +15,25 @@ import Contact from "./components/Contact";
 import WhatsApp from "./components/WhatsApp";
 import { motion } from "motion/react";
 import { useLogo } from "./lib/useLogo";
+import { useSectionsVisibility } from "./lib/useSectionsVisibility";
 
 export default function App() {
   const logoUrl = useLogo();
+  const { visibility } = useSectionsVisibility();
 
   return (
     <div className="min-h-screen bg-ruya-bg">
       <Navbar />
-      
+
       <main>
-        <Hero />
-        <Clients />
-        <About />
-        <Services />
-        <Stats />
-        <Portfolio />
-        <Testimonials />
-        <Contact />
+        {visibility.hero && <Hero />}
+        {visibility.clients && <Clients />}
+        {visibility.about && <About />}
+        {visibility.services && <Services />}
+        {visibility.stats && <Stats />}
+        {visibility.portfolio && <Portfolio />}
+        {visibility.testimonials && <Testimonials />}
+        {visibility.contact && <Contact />}
       </main>
 
       <footer className="bg-ruya-purple text-white py-12 border-t border-white/10 text-right">
@@ -40,30 +42,69 @@ export default function App() {
             <div>
               <div className="mb-6 flex justify-end">
                 {logoUrl ? (
-                  <img src={logoUrl} alt="Logo" className="h-16 w-auto object-contain drop-shadow-sm ml-auto" />
+                  <img
+                    src={logoUrl}
+                    alt="Logo"
+                    className="h-16 w-auto object-contain drop-shadow-sm ml-auto"
+                  />
                 ) : (
                   <div className="h-16 w-40 flex items-center justify-center border-2 border-dashed border-white/10 rounded-xl bg-white/5 ml-auto">
-                    <span className="text-white/20 text-[10px] font-bold">LOGO SPACE</span>
+                    <span className="text-white/20 text-[10px] font-bold">
+                      LOGO SPACE
+                    </span>
                   </div>
                 )}
               </div>
               <p className="text-gray-400 leading-relaxed max-w-sm mr-0 ml-auto">
-                نقدم حلولاً إبداعية في عالم التصميم والطباعة، حيث نجمع بين الخبرة والابتكار لنضع علامتك التجارية في الصدارة.
+                نقدم حلولاً إبداعية في عالم التصميم والطباعة، حيث نجمع بين
+                الخبرة والابتكار لنضع علامتك التجارية في الصدارة.
               </p>
             </div>
-            
+
             <div>
-              <h4 className="text-xl font-bold mb-6 text-ruya-yellow">روابط سريعة</h4>
+              <h4 className="text-xl font-bold mb-6 text-ruya-yellow">
+                روابط سريعة
+              </h4>
               <ul className="space-y-4">
-                <li><a href="#home" className="text-gray-400 hover:text-white transition-colors">الرئيسية</a></li>
-                <li><a href="#services" className="text-gray-400 hover:text-white transition-colors">خدماتنا</a></li>
-                <li><a href="#portfolio" className="text-gray-400 hover:text-white transition-colors">أعمالنا</a></li>
-                <li><a href="#contact" className="text-gray-400 hover:text-white transition-colors">تواصل معنا</a></li>
+                <li>
+                  <a
+                    href="#home"
+                    className="text-gray-400 hover:text-white transition-colors"
+                  >
+                    الرئيسية
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#services"
+                    className="text-gray-400 hover:text-white transition-colors"
+                  >
+                    خدماتنا
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#portfolio"
+                    className="text-gray-400 hover:text-white transition-colors"
+                  >
+                    أعمالنا
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#contact"
+                    className="text-gray-400 hover:text-white transition-colors"
+                  >
+                    تواصل معنا
+                  </a>
+                </li>
               </ul>
             </div>
 
             <div>
-              <h4 className="text-xl font-bold mb-6 text-ruya-yellow">ساعات العمل</h4>
+              <h4 className="text-xl font-bold mb-6 text-ruya-yellow">
+                ساعات العمل
+              </h4>
               <ul className="space-y-4 text-gray-400">
                 <li className="flex justify-between">
                   <span>الأحد - الخميس</span>
@@ -75,14 +116,19 @@ export default function App() {
                 </li>
                 <li className="flex justify-between">
                   <span>الجمعة</span>
-                  <span className="text-ruya-yellow font-bold text-sm bg-ruya-yellow/10 px-2 py-0.5 rounded">مغلق</span>
+                  <span className="text-ruya-yellow font-bold text-sm bg-ruya-yellow/10 px-2 py-0.5 rounded">
+                    مغلق
+                  </span>
                 </li>
               </ul>
             </div>
           </div>
-          
+
           <div className="pt-8 border-t border-white/10 text-center text-gray-500 text-sm">
-            <p>© {new Date().getFullYear()} رؤية ديزاين (RUYA Design). جميع الحقوق محفوظة.</p>
+            <p>
+              © {new Date().getFullYear()} رؤية ديزاين (RUYA Design). جميع
+              الحقوق محفوظة.
+            </p>
           </div>
         </div>
       </footer>

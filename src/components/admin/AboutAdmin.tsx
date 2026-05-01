@@ -13,7 +13,7 @@ interface AboutData {
 const DEFAULT_ABOUT: AboutData = {
   title: "من نحن؟",
   description:
-    "نحن في \"رؤية\" للتصميم والطباعة لسنا مجرد وكالة دعاية وإعلان، بل نحن شركاء نجاحك. نؤمن بأن كل علامة تجارية لها قصة فريدة تستحق أن تُروى بأفضل صورة ممكنة. نجمع بين الإبداع الفني والخبرة التقنية لنقدم لك حلولاً متكاملة تبرز هوية مشروعك.",
+    'نحن في "رؤية" للتصميم والطباعة لسنا مجرد وكالة دعاية وإعلان، بل نحن شركاء نجاحك. نؤمن بأن كل علامة تجارية لها قصة فريدة تستحق أن تُروى بأفضل صورة ممكنة. نجمع بين الإبداع الفني والخبرة التقنية لنقدم لك حلولاً متكاملة تبرز هوية مشروعك.',
   features: [
     "فريق عمل مبدع ومحترف",
     "أحدث تقنيات الطباعة",
@@ -34,7 +34,7 @@ enum OperationType {
 function handleFirestoreError(
   error: unknown,
   operationType: OperationType,
-  path: string | null
+  path: string | null,
 ) {
   const errInfo = {
     error: error instanceof Error ? error.message : String(error),
@@ -132,7 +132,9 @@ export default function AboutAdmin() {
             <textarea
               rows={4}
               value={data.description}
-              onChange={(e) => setData({ ...data, description: e.target.value })}
+              onChange={(e) =>
+                setData({ ...data, description: e.target.value })
+              }
               className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-ruya-yellow resize-none"
             />
           </div>

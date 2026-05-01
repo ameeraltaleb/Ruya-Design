@@ -5,11 +5,26 @@ import { db } from "../lib/firebase";
 
 export default function Clients() {
   const [clients, setClients] = useState([
-    { id: 1, url: "https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg" },
-    { id: 2, url: "https://upload.wikimedia.org/wikipedia/commons/5/51/IBM_logo.svg" },
-    { id: 3, url: "https://upload.wikimedia.org/wikipedia/commons/9/96/Microsoft_logo_%282012%29.svg" },
-    { id: 4, url: "https://upload.wikimedia.org/wikipedia/commons/b/b9/Slack_Technologies_Logo.svg" },
-    { id: 5, url: "https://upload.wikimedia.org/wikipedia/commons/0/08/Spotify_logo_without_text.svg" },
+    {
+      id: 1,
+      url: "https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg",
+    },
+    {
+      id: 2,
+      url: "https://upload.wikimedia.org/wikipedia/commons/5/51/IBM_logo.svg",
+    },
+    {
+      id: 3,
+      url: "https://upload.wikimedia.org/wikipedia/commons/9/96/Microsoft_logo_%282012%29.svg",
+    },
+    {
+      id: 4,
+      url: "https://upload.wikimedia.org/wikipedia/commons/b/b9/Slack_Technologies_Logo.svg",
+    },
+    {
+      id: 5,
+      url: "https://upload.wikimedia.org/wikipedia/commons/0/08/Spotify_logo_without_text.svg",
+    },
   ]);
 
   useEffect(() => {
@@ -20,10 +35,10 @@ export default function Clients() {
         if (docSnap.exists() && docSnap.data().value) {
           const parsed = JSON.parse(docSnap.data().value);
           if (Array.isArray(parsed) && parsed.length > 0) {
-            if (typeof parsed[0] === 'string') {
-               setClients(parsed.map((url, i) => ({ id: i, url })));
+            if (typeof parsed[0] === "string") {
+              setClients(parsed.map((url, i) => ({ id: i, url })));
             } else {
-               setClients(parsed);
+              setClients(parsed);
             }
           } else {
             setClients([]);

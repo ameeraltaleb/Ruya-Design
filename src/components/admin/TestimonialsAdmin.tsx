@@ -16,21 +16,24 @@ const DEFAULT_TESTIMONIALS: TestimonialItem[] = [
     id: 1,
     name: "أحمد محمد",
     role: "المدير التنفيذي لشركة التقنية",
-    content: "تعاملنا مع رؤية للتصميم كان من أفضل القرارات التي اتخذناها. احترافية في العمل وسرعة في التسليم وتصاميم فاقت توقعاتنا.",
+    content:
+      "تعاملنا مع رؤية للتصميم كان من أفضل القرارات التي اتخذناها. احترافية في العمل وسرعة في التسليم وتصاميم فاقت توقعاتنا.",
     rating: 5,
   },
   {
     id: 2,
     name: "سارة خالد",
     role: "صاحبة متجر إلكتروني",
-    content: "فريق مبدع جداً، فهموا فكرتي بسرعة وقدموا لي هوية بصرية مذهلة ساعدت في زيادة مبيعاتي بشكل ملحوظ.",
+    content:
+      "فريق مبدع جداً، فهموا فكرتي بسرعة وقدموا لي هوية بصرية مذهلة ساعدت في زيادة مبيعاتي بشكل ملحوظ.",
     rating: 5,
   },
   {
     id: 3,
     name: "عمر عبدالله",
     role: "مدير تسويق",
-    content: "جودة المطبوعات لديهم لا يُعلى عليها. دقة في الألوان واهتمام بأدق التفاصيل. أنصح بالتعامل معهم بشدة.",
+    content:
+      "جودة المطبوعات لديهم لا يُعلى عليها. دقة في الألوان واهتمام بأدق التفاصيل. أنصح بالتعامل معهم بشدة.",
     rating: 5,
   },
 ];
@@ -43,7 +46,7 @@ enum OperationType {
 function handleFirestoreError(
   error: unknown,
   operationType: OperationType,
-  path: string | null
+  path: string | null,
 ) {
   const errInfo = {
     error: error instanceof Error ? error.message : String(error),
@@ -96,7 +99,11 @@ export default function TestimonialsAdmin() {
     }
   };
 
-  const handleChange = (index: number, field: keyof TestimonialItem, val: string | number) => {
+  const handleChange = (
+    index: number,
+    field: keyof TestimonialItem,
+    val: string | number,
+  ) => {
     const newData = [...data];
     newData[index] = { ...newData[index], [field]: val };
     setData(newData);
@@ -126,47 +133,66 @@ export default function TestimonialsAdmin() {
         <form onSubmit={handleSave} className="space-y-6">
           <div className="space-y-4">
             {data.map((item, idx) => (
-              <div key={item.id} className="p-4 border border-white/10 rounded-xl bg-white/5 relative">
+              <div
+                key={item.id}
+                className="p-4 border border-white/10 rounded-xl bg-white/5 relative"
+              >
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                   <div>
-                    <label className="text-xs text-gray-400 block mb-1">اسم العميل</label>
+                    <label className="text-xs text-gray-400 block mb-1">
+                      اسم العميل
+                    </label>
                     <input
                       type="text"
                       value={item.name}
-                      onChange={(e) => handleChange(idx, "name", e.target.value)}
+                      onChange={(e) =>
+                        handleChange(idx, "name", e.target.value)
+                      }
                       className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-ruya-yellow"
                     />
                   </div>
                   <div>
-                    <label className="text-xs text-gray-400 block mb-1">الصفة أو العمل</label>
+                    <label className="text-xs text-gray-400 block mb-1">
+                      الصفة أو العمل
+                    </label>
                     <input
                       type="text"
                       value={item.role}
-                      onChange={(e) => handleChange(idx, "role", e.target.value)}
+                      onChange={(e) =>
+                        handleChange(idx, "role", e.target.value)
+                      }
                       className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-ruya-yellow"
                     />
                   </div>
                 </div>
-                
+
                 <div>
-                  <label className="text-xs text-gray-400 block mb-1">النص</label>
+                  <label className="text-xs text-gray-400 block mb-1">
+                    النص
+                  </label>
                   <textarea
                     rows={2}
                     value={item.content}
-                    onChange={(e) => handleChange(idx, "content", e.target.value)}
+                    onChange={(e) =>
+                      handleChange(idx, "content", e.target.value)
+                    }
                     className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-ruya-yellow resize-none"
                   />
                 </div>
-                
+
                 <div className="mt-4 flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <label className="text-xs text-gray-400 block">التقييم (1-5)</label>
+                    <label className="text-xs text-gray-400 block">
+                      التقييم (1-5)
+                    </label>
                     <input
                       type="number"
                       min="1"
                       max="5"
                       value={item.rating}
-                      onChange={(e) => handleChange(idx, "rating", parseInt(e.target.value))}
+                      onChange={(e) =>
+                        handleChange(idx, "rating", parseInt(e.target.value))
+                      }
                       className="w-20 bg-white/5 border border-white/10 rounded-lg px-3 py-1 text-white focus:outline-none focus:border-ruya-yellow"
                     />
                   </div>

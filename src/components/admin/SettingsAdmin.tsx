@@ -1,7 +1,11 @@
 import { useState, useEffect, useRef } from "react";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { db, auth } from "../../lib/firebase";
-import { UploadCloud } from "lucide-react";
+import { UploadCloud, Eye, EyeOff } from "lucide-react";
+import {
+  SectionsVisibility,
+  DEFAULT_VISIBILITY,
+} from "../../lib/useSectionsVisibility";
 
 enum OperationType {
   CREATE = "create",
@@ -28,20 +32,28 @@ function handleFirestoreError(
 
 export default function SettingsAdmin() {
   const [logoUrl, setLogoUrl] = useState("");
+  const [visibility, setVisibility] =
+    useState<SectionsVisibility>(DEFAULT_VISIBILITY);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [savingVisibility, setSavingVisibility] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const fetchSettings = async () => {
       try {
-        const docRef = doc(db, "settings", "logo");
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          setLogoUrl(docSnap.data().value || "");
+        const logoDoc = await getDoc(doc(db, "settings", "logo"));
+        if (logoDoc.exists()) {
+          setLogoUrl(logoDoc.data().value || "");
+        }
+
+        const visDoc = await getDoc(doc(db, "settings", "sections_visibility"));
+        if (visDoc.exists() && visDoc.data().value) {
+          const fetched = JSON.parse(visDoc.data().value);
+          setVisibility({ ...DEFAULT_VISIBILITY, ...fetched });
         }
       } catch (error) {
-        handleFirestoreError(error, OperationType.GET, "settings/logo");
+        handleFirestoreError(error, OperationType.GET, "settings");
       } finally {
         setLoading(false);
       }
@@ -49,7 +61,7 @@ export default function SettingsAdmin() {
     fetchSettings();
   }, []);
 
-  const handleSave = async (e: React.FormEvent) => {
+  const handleSaveLogo = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
     try {
@@ -57,11 +69,31 @@ export default function SettingsAdmin() {
         value: logoUrl,
         updatedAt: Date.now(),
       });
-      alert("تم الحفظ بنجاح");
+      alert("تم حفظ الشعار بنجاح");
     } catch (error) {
       handleFirestoreError(error, OperationType.WRITE, "settings/logo");
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleSaveVisibility = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSavingVisibility(true);
+    try {
+      await setDoc(doc(db, "settings", "sections_visibility"), {
+        value: JSON.stringify(visibility),
+        updatedAt: Date.now(),
+      });
+      alert("تم حفظ إعدادات الأقسام بنجاح");
+    } catch (error) {
+      handleFirestoreError(
+        error,
+        OperationType.WRITE,
+        "settings/sections_visibility",
+      );
+    } finally {
+      setSavingVisibility(false);
     }
   };
 
@@ -88,13 +120,14 @@ export default function SettingsAdmin() {
     <div dir="rtl" className="max-w-2xl">
       <h1 className="text-3xl font-bold mb-8">الإعدادات العامة</h1>
 
-      <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
-        <form onSubmit={handleSave} className="space-y-6">
+      <div className="bg-white/5 border border-white/10 rounded-2xl p-6 mb-8">
+        <form onSubmit={handleSaveLogo} className="space-y-6">
           <div>
+            <h2 className="text-xl font-bold mb-4">شعار الموقع</h2>
             <label className="block text-sm font-medium text-gray-300 mb-2">
-              شعار الموقع (صورة بصيغة PNG أو SVG)
+              (صورة بصيغة PNG أو SVG)
             </label>
-            
+
             <input
               type="file"
               accept="image/png, image/svg+xml, image/jpeg, image/webp"
@@ -102,7 +135,7 @@ export default function SettingsAdmin() {
               ref={fileInputRef}
               className="hidden"
             />
-            
+
             <div className="flex items-center gap-4">
               <button
                 type="button"
@@ -112,7 +145,7 @@ export default function SettingsAdmin() {
                 <UploadCloud className="w-5 h-5" />
                 <span>اختر صورة</span>
               </button>
-              
+
               <div className="flex-1 text-sm text-gray-400">
                 الحد الأقصى للحجم: 500KB
               </div>
@@ -146,7 +179,71 @@ export default function SettingsAdmin() {
             disabled={saving}
             className="bg-ruya-yellow text-ruya-bg hover:bg-yellow-400 font-bold py-3 px-6 rounded-xl transition-colors disabled:opacity-50"
           >
-            {saving ? "جاري الحفظ..." : "حفظ الإعدادات"}
+            {saving ? "جاري الحفظ..." : "حفظ الشعار"}
+          </button>
+        </form>
+      </div>
+
+      <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
+        <form onSubmit={handleSaveVisibility} className="space-y-6">
+          <h2 className="text-xl font-bold mb-4">إظهار / إخفاء الأقسام</h2>
+          <p className="text-gray-400 text-sm mb-6">
+            يمكنك من هنا التحكم في ظهور أقسام الموقع الرئيسية للزوار.
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {[
+              { key: "hero", label: "الواجهة الرئيسية" },
+              { key: "clients", label: "شركاء النجاح" },
+              { key: "about", label: "من نحن" },
+              { key: "services", label: "خدماتنا" },
+              { key: "stats", label: "الإحصائيات" },
+              { key: "portfolio", label: "أعمالنا" },
+              { key: "testimonials", label: "آراء العملاء" },
+              { key: "contact", label: "تواصل معنا" },
+            ].map((section) => (
+              <div
+                key={section.key}
+                className="flex items-center justify-between p-4 border border-white/10 rounded-xl bg-white/5"
+              >
+                <span className="text-white font-medium">{section.label}</span>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setVisibility({
+                      ...visibility,
+                      [section.key]:
+                        !visibility[section.key as keyof SectionsVisibility],
+                    })
+                  }
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors font-bold text-sm ${
+                    visibility[section.key as keyof SectionsVisibility]
+                      ? "bg-green-500/20 text-green-400 hover:bg-green-500/30"
+                      : "bg-red-500/20 text-red-400 hover:bg-red-500/30"
+                  }`}
+                >
+                  {visibility[section.key as keyof SectionsVisibility] ? (
+                    <>
+                      <Eye className="w-4 h-4" />
+                      <span>ظاهر</span>
+                    </>
+                  ) : (
+                    <>
+                      <EyeOff className="w-4 h-4" />
+                      <span>مخفي</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            ))}
+          </div>
+
+          <button
+            type="submit"
+            disabled={savingVisibility}
+            className="bg-ruya-yellow text-ruya-bg hover:bg-yellow-400 font-bold py-3 px-6 rounded-xl transition-colors disabled:opacity-50 mt-4"
+          >
+            {savingVisibility ? "جاري الحفظ..." : "حفظ الأقسام"}
           </button>
         </form>
       </div>

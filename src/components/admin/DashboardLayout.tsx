@@ -9,7 +9,7 @@ import {
   Image as ImageIcon,
   Shield,
   Menu,
-  X
+  X,
 } from "lucide-react";
 import { auth } from "../../lib/firebase";
 import { onAuthStateChanged, signOut } from "firebase/auth";
@@ -64,13 +64,19 @@ export default function DashboardLayout() {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-900 text-white flex flex-col md:flex-row" dir="rtl">
+    <div
+      className="min-h-screen bg-slate-900 text-white flex flex-col md:flex-row"
+      dir="rtl"
+    >
       {/* Mobile Header */}
       <div className="md:hidden flex items-center justify-between p-4 bg-ruya-purple border-b border-white/10 sticky top-0 z-30">
         <div className="text-xl font-bold text-white">
           لوحة <span className="text-ruya-yellow">الإدارة</span>
         </div>
-        <button onClick={() => setIsMobileMenuOpen(true)} className="text-white p-2">
+        <button
+          onClick={() => setIsMobileMenuOpen(true)}
+          className="text-white p-2"
+        >
           <Menu className="w-6 h-6" />
         </button>
       </div>
@@ -86,17 +92,20 @@ export default function DashboardLayout() {
       {/* Sidebar */}
       <div
         className={`fixed md:sticky top-0 right-0 h-screen w-64 bg-ruya-purple border-l border-white/10 p-6 flex flex-col z-50 transform transition-transform duration-300 ease-in-out overflow-hidden shadow-2xl md:shadow-none ${
-          isMobileMenuOpen ? "translate-x-0" : "translate-x-full md:translate-x-0"
+          isMobileMenuOpen
+            ? "translate-x-0"
+            : "translate-x-full md:translate-x-0"
         }`}
       >
         <div className="flex justify-between items-center mb-12">
           <div className="text-2xl font-bold text-white hidden md:block mt-2">
             لوحة <span className="text-ruya-yellow">الإدارة</span>
           </div>
-          <div className="text-xl font-bold text-white md:hidden">
-            القائمة
-          </div>
-          <button onClick={() => setIsMobileMenuOpen(false)} className="md:hidden text-white p-2">
+          <div className="text-xl font-bold text-white md:hidden">القائمة</div>
+          <button
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="md:hidden text-white p-2"
+          >
             <X className="w-6 h-6" />
           </button>
         </div>

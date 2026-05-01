@@ -49,7 +49,8 @@ export default function Stats() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 text-center">
           {stats.map((stat, index) => {
-            const Icon = (LucideIcons as any)[stat.iconName] || LucideIcons.Star;
+            const Icon =
+              (LucideIcons as any)[stat.iconName] || LucideIcons.Star;
             return (
               <motion.div
                 key={stat.id}

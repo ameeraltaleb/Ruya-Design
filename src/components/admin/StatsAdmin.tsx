@@ -26,7 +26,7 @@ enum OperationType {
 function handleFirestoreError(
   error: unknown,
   operationType: OperationType,
-  path: string | null
+  path: string | null,
 ) {
   const errInfo = {
     error: error instanceof Error ? error.message : String(error),
@@ -109,35 +109,51 @@ export default function StatsAdmin() {
         <form onSubmit={handleSave} className="space-y-6">
           <div className="space-y-4">
             {data.map((stat, idx) => {
-              const IconComp = (LucideIcons as any)[stat.iconName] || LucideIcons.Star;
+              const IconComp =
+                (LucideIcons as any)[stat.iconName] || LucideIcons.Star;
               return (
-                <div key={stat.id} className="p-4 border border-white/10 rounded-xl bg-white/5 flex gap-4 items-center">
+                <div
+                  key={stat.id}
+                  className="p-4 border border-white/10 rounded-xl bg-white/5 flex gap-4 items-center"
+                >
                   <div className="flex-1 grid grid-cols-3 gap-4">
                     <div>
-                      <label className="text-xs text-gray-400 block mb-1">الرقم (القيمة)</label>
+                      <label className="text-xs text-gray-400 block mb-1">
+                        الرقم (القيمة)
+                      </label>
                       <input
                         type="text"
                         value={stat.value}
-                        onChange={(e) => handleChange(idx, "value", e.target.value)}
+                        onChange={(e) =>
+                          handleChange(idx, "value", e.target.value)
+                        }
                         className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-ruya-yellow"
                       />
                     </div>
                     <div>
-                      <label className="text-xs text-gray-400 block mb-1">العنوان</label>
+                      <label className="text-xs text-gray-400 block mb-1">
+                        العنوان
+                      </label>
                       <input
                         type="text"
                         value={stat.name}
-                        onChange={(e) => handleChange(idx, "name", e.target.value)}
+                        onChange={(e) =>
+                          handleChange(idx, "name", e.target.value)
+                        }
                         className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-ruya-yellow"
                       />
                     </div>
                     <div>
-                      <label className="text-xs text-gray-400 block mb-1">اسم الأيقونة (Lucide)</label>
+                      <label className="text-xs text-gray-400 block mb-1">
+                        اسم الأيقونة (Lucide)
+                      </label>
                       <div className="flex items-center gap-2">
                         <input
                           type="text"
                           value={stat.iconName}
-                          onChange={(e) => handleChange(idx, "iconName", e.target.value)}
+                          onChange={(e) =>
+                            handleChange(idx, "iconName", e.target.value)
+                          }
                           className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-ruya-yellow text-left"
                           dir="ltr"
                         />
