@@ -11,8 +11,6 @@ import Contact from "./components/Contact";
 import WhatsApp from "./components/WhatsApp";
 import { motion } from "motion/react";
 
-import Logo from "./components/Logo";
-
 export default function App() {
   return (
     <div className="min-h-screen bg-ruya-bg">
@@ -30,7 +28,9 @@ export default function App() {
           <div className="grid md:grid-cols-3 gap-12 mb-12">
             <div>
               <div className="mb-6 flex justify-end">
-                <Logo variant="light" className="h-16 w-auto" />
+                <div className="h-16 w-40 flex items-center justify-center border-2 border-dashed border-white/10 rounded-xl bg-white/5 ml-auto">
+                  <span className="text-white/20 text-[10px] font-bold">LOCO SPACE</span>
+                </div>
               </div>
               <p className="text-gray-400 leading-relaxed max-w-sm mr-0 ml-auto">
                 نقدم حلولاً إبداعية في عالم التصميم والطباعة، حيث نجمع بين الخبرة والابتكار لنضع علامتك التجارية في الصدارة.

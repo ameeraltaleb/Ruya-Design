@@ -89,12 +89,12 @@ export default function Hero() {
           </motion.div>
         </div>
 
-        <div className="lg:col-span-5 hidden lg:block">
+        <div className="lg:col-span-5 mt-12 lg:mt-0">
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8 }}
-            className="relative bg-slate-200 h-[500px] rounded-[60px] overflow-hidden shadow-2xl border-[12px] border-white"
+            className="relative bg-slate-200 h-[350px] md:h-[450px] lg:h-[500px] rounded-[40px] md:rounded-[60px] overflow-hidden shadow-2xl border-[8px] md:border-[12px] border-white"
           >
             <div className="absolute inset-0 bg-gradient-to-t from-ruya-purple/80 via-transparent to-transparent z-10" />
             <img 

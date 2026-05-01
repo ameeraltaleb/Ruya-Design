@@ -3,8 +3,6 @@ import { useState, useEffect } from "react";
 import { NAVBAR_LINKS } from "../constants";
 import { Menu, X } from "lucide-react";
 
-import Logo from "./Logo";
-
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const { scrollY } = useScroll();
@@ -36,7 +34,9 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-full">
           <div className="flex-shrink-0 flex items-center">
              <a href="#home" className="flex items-center">
-               <Logo variant="light" className="h-10 md:h-14 w-auto drop-shadow-sm" />
+               <div className="h-16 w-40 flex items-center justify-center border-2 border-dashed border-white/10 rounded-xl bg-white/5">
+                 <span className="text-white/20 text-[10px] font-bold">LOCO SPACE</span>
+               </div>
              </a>
           </div>
           
