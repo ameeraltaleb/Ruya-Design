@@ -1,6 +1,6 @@
 import {StrictMode} from 'react';
 import {createRoot} from 'react-dom/client';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { HashRouter, Routes, Route } from 'react-router-dom';
 import App from './App.tsx';
 import DashboardLayout from './components/admin/DashboardLayout.tsx';
 import ProjectsAdmin from './components/admin/ProjectsAdmin.tsx';
@@ -18,7 +18,7 @@ import './index.css';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <BrowserRouter>
+    <HashRouter>
       <Routes>
         <Route path="/" element={<App />} />
         <Route path="/admin/login" element={<Login />} />
@@ -35,6 +35,6 @@ createRoot(document.getElementById('root')!).render(
           <Route path="admins" element={<AdminsAdmin />} />
         </Route>
       </Routes>
-    </BrowserRouter>
+    </HashRouter>
   </StrictMode>,
 );
