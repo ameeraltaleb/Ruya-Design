@@ -32,15 +32,15 @@ export default function Portfolio() {
         </div>
 
         {/* Filter Buttons */}
-        <div className="flex justify-center flex-wrap gap-4 mb-16">
+        <div className="flex justify-center flex-wrap gap-2 mb-16">
           {CATEGORIES.map((category) => (
             <button
               key={category}
               onClick={() => setActiveCategory(category)}
-              className={`px-8 py-3 rounded-full text-lg font-bold transition-all duration-300 ${
+              className={`px-6 py-2 rounded-full text-xs font-bold transition-all duration-300 ${
                 activeCategory === category
-                  ? "bg-ruya-purple text-white shadow-lg shadow-ruya-purple/30"
-                  : "bg-white text-ruya-purple hover:bg-gray-100"
+                  ? "bg-ruya-purple text-white shadow-xl"
+                  : "bg-white border border-slate-200 text-slate-400 hover:border-ruya-yellow hover:text-ruya-yellow"
               }`}
             >
               {category}
@@ -49,9 +49,8 @@ export default function Portfolio() {
         </div>
 
         {/* Project Grid */}
-        <motion.div 
-          layout
-          className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
+        <div 
+          className="grid md:grid-cols-2 lg:grid-cols-3 gap-10"
         >
           <AnimatePresence mode="popLayout">
             {filteredProjects.map((project) => (
@@ -62,24 +61,26 @@ export default function Portfolio() {
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}
                 transition={{ duration: 0.4 }}
-                className="group relative bg-white rounded-3xl overflow-hidden shadow-md hover:shadow-2xl transition-all"
+                className="group relative bg-slate-200 h-[400px] rounded-[40px] overflow-hidden shadow-2xl border-8 border-white"
               >
-                <div className="aspect-[4/3] overflow-hidden">
+                <div className="absolute inset-0 z-0">
                   <img
                     src={project.image}
                     alt={project.title}
-                    className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
+                    className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-1000"
                     referrerPolicy="no-referrer"
                   />
                 </div>
-                <div className="absolute inset-0 bg-gradient-to-t from-ruya-purple/90 via-ruya-purple/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-8">
-                  <span className="text-ruya-yellow font-bold text-sm mb-2 uppercase tracking-widest">{project.category}</span>
-                  <h3 className="text-white text-2xl font-black">{project.title}</h3>
+                <div className="absolute inset-0 bg-gradient-to-t from-ruya-purple via-transparent to-transparent opacity-80 z-10 transition-opacity group-hover:opacity-90" />
+                
+                <div className="absolute bottom-8 right-8 left-8 text-white z-20 translate-y-4 group-hover:translate-y-0 transition-transform duration-500 text-right">
+                  <h3 className="text-2xl font-black mb-1">{project.title}</h3>
+                  <p className="text-sm text-ruya-yellow font-bold uppercase tracking-widest">{project.category} • 2024</p>
                 </div>
               </motion.div>
             ))}
           </AnimatePresence>
-        </motion.div>
+        </div>
       </div>
     </section>
   );

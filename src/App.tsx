@@ -11,6 +11,8 @@ import Contact from "./components/Contact";
 import WhatsApp from "./components/WhatsApp";
 import { motion } from "motion/react";
 
+import Logo from "./components/Logo";
+
 export default function App() {
   return (
     <div className="min-h-screen bg-ruya-bg">
@@ -23,15 +25,14 @@ export default function App() {
         <Contact />
       </main>
 
-      <footer className="bg-ruya-purple text-white py-12 border-t border-white/10">
+      <footer className="bg-ruya-purple text-white py-12 border-t border-white/10 text-right">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-3 gap-12 mb-12">
             <div>
-              <h3 className="text-2xl font-black mb-6 flex items-center gap-2">
-                <span className="text-ruya-yellow">RUYA</span>
-                <span>Design</span>
-              </h3>
-              <p className="text-gray-400 leading-relaxed max-w-sm">
+              <div className="mb-6 flex justify-end">
+                <Logo variant="light" className="h-16 w-auto" />
+              </div>
+              <p className="text-gray-400 leading-relaxed max-w-sm mr-0 ml-auto">
                 نقدم حلولاً إبداعية في عالم التصميم والطباعة، حيث نجمع بين الخبرة والابتكار لنضع علامتك التجارية في الصدارة.
               </p>
             </div>

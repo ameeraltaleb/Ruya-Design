@@ -43,14 +43,13 @@ export default function Services() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
-                whileHover={{ y: -10 }}
-                className="bg-ruya-bg p-8 rounded-3xl border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300"
+                className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-500 group"
               >
-                <div className="w-16 h-16 bg-ruya-purple text-ruya-yellow rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-ruya-purple/20">
+                <div className="w-16 h-16 bg-ruya-purple/5 text-ruya-purple rounded-2xl flex items-center justify-center mb-6 group-hover:bg-ruya-purple group-hover:text-ruya-yellow transition-colors duration-300">
                   <Icon size={32} />
                 </div>
-                <h3 className="text-2xl font-bold text-ruya-purple mb-4">{service.title}</h3>
-                <p className="text-gray-600 leading-relaxed">{service.description}</p>
+                <h3 className="text-2xl font-black text-ruya-purple mb-4">{service.title}</h3>
+                <p className="text-slate-500 leading-relaxed font-bold text-sm tracking-wide">{service.description}</p>
               </motion.div>
             );
           })}

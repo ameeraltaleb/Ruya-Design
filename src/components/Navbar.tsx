@@ -3,6 +3,8 @@ import { useState, useEffect } from "react";
 import { NAVBAR_LINKS } from "../constants";
 import { Menu, X } from "lucide-react";
 
+import Logo from "./Logo";
+
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const { scrollY } = useScroll();
@@ -25,32 +27,34 @@ export default function Navbar() {
 
   return (
     <motion.nav
-      style={{ backgroundColor: scrolled ? "rgba(75, 42, 107, 1)" : "rgba(75, 42, 107, 0)" }}
-      className="fixed top-0 left-0 right-0 z-50 transition-colors duration-300"
+      style={{ backgroundColor: scrolled ? "rgba(75, 42, 107, 1)" : "rgba(75, 42, 107, 0.9)" }}
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'shadow-2xl border-b-4 border-ruya-yellow h-20' : 'h-24'}`}
       initial={{ y: -100 }}
       animate={{ y: 0 }}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
+        <div className="flex items-center justify-between h-full">
           <div className="flex-shrink-0 flex items-center">
-             <div className="text-2xl font-bold text-white flex items-center gap-2">
-                <span className="text-ruya-yellow">RUYA</span>
-                <span>Design</span>
-             </div>
+             <a href="#home" className="flex items-center">
+               <Logo variant="light" className="h-10 md:h-14 w-auto drop-shadow-sm" />
+             </a>
           </div>
           
-          <div className="hidden md:block">
-            <div className="mr-10 flex items-baseline space-x-8 space-x-reverse">
+          <div className="hidden md:flex items-center gap-8">
+            <div className="flex items-baseline space-x-8 space-x-reverse">
               {NAVBAR_LINKS.map((link) => (
                 <a
                   key={link.name}
                   href={link.href}
-                  className="text-white hover:text-ruya-yellow px-3 py-2 rounded-md text-lg font-medium transition-colors"
+                  className="text-white/90 hover:text-ruya-yellow px-3 py-2 text-sm font-bold tracking-wide transition-colors"
                 >
                   {link.name}
                 </a>
               ))}
             </div>
+            <button className="bg-ruya-yellow text-ruya-purple px-6 py-2.5 rounded-full font-black text-xs uppercase shadow-[0_4px_0_rgb(200,140,30)] active:translate-y-1 transition-all">
+              ابدأ الآن
+            </button>
           </div>
 
           <div className="md:hidden">

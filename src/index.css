@@ -17,6 +17,11 @@
   }
 }
 
+::selection {
+  background-color: var(--color-ruya-yellow);
+  color: white;
+}
+
 .markdown-body {
   direction: rtl;
 }
