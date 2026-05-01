@@ -16,10 +16,12 @@ import WhatsApp from "./components/WhatsApp";
 import { motion } from "motion/react";
 import { useLogo } from "./lib/useLogo";
 import { useSectionsVisibility } from "./lib/useSectionsVisibility";
+import { useContactInfo } from "./lib/useContactInfo";
 
 export default function App() {
   const logoUrl = useLogo();
   const { visibility } = useSectionsVisibility();
+  const { contactInfo } = useContactInfo();
 
   return (
     <div className="min-h-screen bg-ruya-bg overflow-x-hidden">
@@ -64,8 +66,7 @@ export default function App() {
                 )}
               </div>
               <p className="text-gray-400 leading-relaxed max-w-sm mr-0 ml-auto">
-                نقدم حلولاً إبداعية في عالم التصميم والطباعة، حيث نجمع بين
-                الخبرة والابتكار لنضع علامتك التجارية في الصدارة.
+                {contactInfo.footerText}
               </p>
             </div>
 
@@ -74,38 +75,46 @@ export default function App() {
                 روابط سريعة
               </h4>
               <ul className="space-y-4">
-                <li>
-                  <a
-                    href="#home"
-                    className="text-gray-400 hover:text-white transition-colors"
-                  >
-                    الرئيسية
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#services"
-                    className="text-gray-400 hover:text-white transition-colors"
-                  >
-                    خدماتنا
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#portfolio"
-                    className="text-gray-400 hover:text-white transition-colors"
-                  >
-                    أعمالنا
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#contact"
-                    className="text-gray-400 hover:text-white transition-colors"
-                  >
-                    تواصل معنا
-                  </a>
-                </li>
+                {visibility.hero && (
+                  <li>
+                    <a
+                      href="#home"
+                      className="text-gray-400 hover:text-white transition-colors"
+                    >
+                      الرئيسية
+                    </a>
+                  </li>
+                )}
+                {visibility.services && (
+                  <li>
+                    <a
+                      href="#services"
+                      className="text-gray-400 hover:text-white transition-colors"
+                    >
+                      خدماتنا
+                    </a>
+                  </li>
+                )}
+                {visibility.portfolio && (
+                  <li>
+                    <a
+                      href="#portfolio"
+                      className="text-gray-400 hover:text-white transition-colors"
+                    >
+                      أعمالنا
+                    </a>
+                  </li>
+                )}
+                {visibility.contact && (
+                  <li>
+                    <a
+                      href="#contact"
+                      className="text-gray-400 hover:text-white transition-colors"
+                    >
+                      تواصل معنا
+                    </a>
+                  </li>
+                )}
               </ul>
             </div>
 
@@ -116,16 +125,16 @@ export default function App() {
               <ul className="space-y-4 text-gray-400">
                 <li className="flex justify-between">
                   <span>الأحد - الخميس</span>
-                  <span>9:00 ص - 6:00 م</span>
+                  <span>{contactInfo.workingHours?.weekdays}</span>
                 </li>
                 <li className="flex justify-between">
                   <span>السبت</span>
-                  <span>10:00 ص - 4:00 م</span>
+                  <span>{contactInfo.workingHours?.saturday}</span>
                 </li>
                 <li className="flex justify-between">
                   <span>الجمعة</span>
                   <span className="text-ruya-yellow font-bold text-sm bg-ruya-yellow/10 px-2 py-0.5 rounded">
-                    مغلق
+                    {contactInfo.workingHours?.friday}
                   </span>
                 </li>
               </ul>

@@ -1,7 +1,7 @@
 import { motion } from "motion/react";
 import { CheckCircle2 } from "lucide-react";
 import { useState, useEffect } from "react";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "../lib/firebase";
 
 export default function About() {
@@ -13,12 +13,14 @@ export default function About() {
   });
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const docRef = doc(db, "settings", "about");
-        const docSnap = await getDoc(docRef);
+    const docRef = doc(db, "settings", "about");
+    const unsubscribe = onSnapshot(
+      docRef,
+      (docSnap) => {
         if (docSnap.exists() && docSnap.data().value) {
-          setData(JSON.parse(docSnap.data().value));
+          try {
+            setData(JSON.parse(docSnap.data().value));
+          } catch (e) {}
         } else {
           // Default
           setData({
@@ -37,11 +39,13 @@ export default function About() {
               "https://images.unsplash.com/photo-1600132806370-bf17e65e942f?q=80&w=2194&auto=format&fit=crop",
           });
         }
-      } catch (error) {
-        console.error("Error fetching about section:", error);
-      }
-    };
-    fetchData();
+      },
+      (error) => {
+        console.error("Error fetching about section realtime:", error);
+      },
+    );
+
+    return () => unsubscribe();
   }, []);
 
   return (

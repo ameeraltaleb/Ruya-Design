@@ -1,7 +1,7 @@
 import { motion } from "motion/react";
 import { Quote, Star } from "lucide-react";
 import { useState, useEffect } from "react";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "../lib/firebase";
 
 export interface TestimonialItem {
@@ -41,18 +41,22 @@ export default function Testimonials() {
   ]);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const docRef = doc(db, "settings", "testimonials");
-        const docSnap = await getDoc(docRef);
+    const docRef = doc(db, "settings", "testimonials");
+    const unsubscribe = onSnapshot(
+      docRef,
+      (docSnap) => {
         if (docSnap.exists() && docSnap.data().value) {
-          setTestimonials(JSON.parse(docSnap.data().value));
+          try {
+            setTestimonials(JSON.parse(docSnap.data().value));
+          } catch (e) {}
         }
-      } catch (error) {
-        console.error("Error fetching testimonials:", error);
-      }
-    };
-    fetchData();
+      },
+      (error) => {
+        console.error("Error fetching testimonials realtime:", error);
+      },
+    );
+
+    return () => unsubscribe();
   }, []);
 
   return (

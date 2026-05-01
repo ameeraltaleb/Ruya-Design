@@ -76,8 +76,11 @@ export default function ContactAdmin() {
       try {
         const docRef = doc(db, "settings", "contact_info");
         const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          setFormData({ ...DEFAULT_CONTACT_INFO, ...docSnap.data() });
+        if (docSnap.exists() && docSnap.data().value) {
+          try {
+            const fetched = JSON.parse(docSnap.data().value);
+            setFormData({ ...DEFAULT_CONTACT_INFO, ...fetched });
+          } catch (e) {}
         }
       } catch (error) {
         console.error("Error fetching contact info:", error);
@@ -95,7 +98,7 @@ export default function ContactAdmin() {
 
     try {
       await setDoc(doc(db, "settings", "contact_info"), {
-        ...formData,
+        value: JSON.stringify(formData),
         updatedAt: Date.now(),
       });
       alert("تم حفظ معلومات التواصل بنجاح");
@@ -220,6 +223,83 @@ export default function ContactAdmin() {
                 className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-ruya-yellow"
                 dir="ltr"
               />
+            </div>
+
+            <div className="space-y-2 md:col-span-2">
+              <label className="text-sm font-bold text-gray-300">
+                نص التذييل (الفوتر)
+              </label>
+              <textarea
+                name="footerText"
+                value={formData.footerText}
+                onChange={handleChange}
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-ruya-yellow h-24"
+              />
+            </div>
+
+            <div className="space-y-4 md:col-span-2">
+              <h3 className="text-lg font-bold text-ruya-yellow border-b border-white/10 pb-2">
+                ساعات العمل
+              </h3>
+              <div className="grid md:grid-cols-3 gap-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-bold text-gray-300">
+                    الأحد - الخميس
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.workingHours?.weekdays || ""}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        workingHours: {
+                          ...formData.workingHours,
+                          weekdays: e.target.value,
+                        },
+                      })
+                    }
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-ruya-yellow"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-bold text-gray-300">
+                    السبت
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.workingHours?.saturday || ""}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        workingHours: {
+                          ...formData.workingHours,
+                          saturday: e.target.value,
+                        },
+                      })
+                    }
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-ruya-yellow"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-bold text-gray-300">
+                    الجمعة
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.workingHours?.friday || ""}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        workingHours: {
+                          ...formData.workingHours,
+                          friday: e.target.value,
+                        },
+                      })
+                    }
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-ruya-yellow"
+                  />
+                </div>
+              </div>
             </div>
           </div>
 

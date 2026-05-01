@@ -1,6 +1,6 @@
 import { motion } from "motion/react";
 import { useState, useEffect } from "react";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "../lib/firebase";
 
 export default function Clients() {
@@ -28,27 +28,31 @@ export default function Clients() {
   ]);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const docRef = doc(db, "settings", "clients");
-        const docSnap = await getDoc(docRef);
+    const docRef = doc(db, "settings", "clients");
+    const unsubscribe = onSnapshot(
+      docRef,
+      (docSnap) => {
         if (docSnap.exists() && docSnap.data().value) {
-          const parsed = JSON.parse(docSnap.data().value);
-          if (Array.isArray(parsed) && parsed.length > 0) {
-            if (typeof parsed[0] === "string") {
-              setClients(parsed.map((url, i) => ({ id: i, url })));
+          try {
+            const parsed = JSON.parse(docSnap.data().value);
+            if (Array.isArray(parsed) && parsed.length > 0) {
+              if (typeof parsed[0] === "string") {
+                setClients(parsed.map((url, i) => ({ id: i, url })));
+              } else {
+                setClients(parsed);
+              }
             } else {
-              setClients(parsed);
+              setClients([]);
             }
-          } else {
-            setClients([]);
-          }
+          } catch (e) {}
         }
-      } catch (error) {
-        console.error("Error fetching clients:", error);
-      }
-    };
-    fetchData();
+      },
+      (error) => {
+        console.error("Error fetching clients realtime:", error);
+      },
+    );
+
+    return () => unsubscribe();
   }, []);
 
   if (clients.length === 0) return null;

@@ -10,6 +10,12 @@ export interface ContactInfo {
   facebook: string;
   twitter: string;
   whatsapp: string;
+  footerText: string;
+  workingHours: {
+    weekdays: string;
+    saturday: string;
+    friday: string;
+  };
 }
 
 const DEFAULT_CONTACT_INFO: ContactInfo = {
@@ -20,24 +26,39 @@ const DEFAULT_CONTACT_INFO: ContactInfo = {
   facebook: "#",
   twitter: "#",
   whatsapp: "+966500000000",
+  footerText:
+    "نقدم حلولاً إبداعية في عالم التصميم والطباعة، حيث نجمع بين الخبرة والابتكار لنضع علامتك التجارية في الصدارة.",
+  workingHours: {
+    weekdays: "9:00 ص - 6:00 م",
+    saturday: "10:00 ص - 4:00 م",
+    friday: "مغلق",
+  },
 };
 
 export function useContactInfo() {
-  const [contactInfo, setContactInfo] = useState<ContactInfo>(DEFAULT_CONTACT_INFO);
+  const [contactInfo, setContactInfo] =
+    useState<ContactInfo>(DEFAULT_CONTACT_INFO);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const docRef = doc(db, "settings", "contact_info");
-    
-    const unsubscribe = onSnapshot(docRef, (docSnap) => {
-      if (docSnap.exists()) {
-        setContactInfo({ ...DEFAULT_CONTACT_INFO, ...docSnap.data() });
-      }
-      setLoading(false);
-    }, (error) => {
-      console.error("Error fetching contact info realtime:", error);
-      setLoading(false);
-    });
+
+    const unsubscribe = onSnapshot(
+      docRef,
+      (docSnap) => {
+        if (docSnap.exists() && docSnap.data().value) {
+          try {
+            const fetched = JSON.parse(docSnap.data().value);
+            setContactInfo({ ...DEFAULT_CONTACT_INFO, ...fetched });
+          } catch (e) {}
+        }
+        setLoading(false);
+      },
+      (error) => {
+        console.error("Error fetching contact info realtime:", error);
+        setLoading(false);
+      },
+    );
 
     return () => unsubscribe();
   }, []);
