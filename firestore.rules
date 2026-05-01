@@ -25,7 +25,7 @@ service cloud.firestore {
     }
     
     function isAdmin() {
-      return isSignedIn() && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+      return isSignedIn() && (exists(/databases/$(database)/documents/admins/$(request.auth.uid)) || request.auth.token.email == 'ameeraltaleb@gmail.com');
     }
 
     // Validators
@@ -62,6 +62,14 @@ service cloud.firestore {
              data.message is string && data.message.size() > 0 && data.message.size() <= 2000 &&
              data.createdAt is number &&
              data.status in ['new', 'read'];
+    }
+
+    function isValidAdmin(data) {
+      return data.keys().hasAll(['email', 'role', 'createdAt']) &&
+             data.keys().size() == 3 &&
+             data.email is string && data.email.size() > 0 && data.email.size() <= 100 &&
+             data.role in ['admin', 'superadmin'] &&
+             data.createdAt is number;
     }
 
     // Projects
@@ -104,7 +112,8 @@ service cloud.firestore {
     match /admins/{adminId} {
       allow get: if isAdmin() && isValidId(adminId);
       allow list: if isAdmin();
-      // No creation/update through client-side to prevent privilege escalation
+      allow create: if isAdmin() && isValidId(adminId) && isValidAdmin(incoming()) && incoming().createdAt == request.time.toMillis();
+      allow delete: if isAdmin() && isValidId(adminId) && adminId != request.auth.uid;
     }
   }
 }
