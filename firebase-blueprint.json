@@ -1,0 +1,84 @@
+{
+  "entities": {
+    "Project": {
+      "title": "Project",
+      "description": "A portfolio project",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "category": { "type": "string" },
+        "image": { "type": "string" },
+        "createdAt": { "type": "number", "description": "Timestamp" }
+      },
+      "required": ["title", "category", "image"]
+    },
+    "Service": {
+      "title": "Service",
+      "description": "A service offered",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "icon": { "type": "string" },
+        "description": { "type": "string" },
+        "createdAt": { "type": "number", "description": "Timestamp" }
+      },
+      "required": ["title", "icon", "description"]
+    },
+    "Setting": {
+      "title": "Setting",
+      "description": "A setting value",
+      "type": "object",
+      "properties": {
+        "value": { "type": "string" },
+        "updatedAt": { "type": "number", "description": "Timestamp" }
+      },
+      "required": ["value"]
+    },
+    "Message": {
+      "title": "Message",
+      "description": "A contact form message",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "message": { "type": "string" },
+        "createdAt": { "type": "number" },
+        "status": { "type": "string", "enum": ["new", "read"] }
+      },
+      "required": ["name", "email", "message"]
+    },
+    "Admin": {
+      "title": "Admin",
+      "description": "Admin user profile",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string" },
+        "role": { "type": "string" },
+        "createdAt": { "type": "number" }
+      },
+      "required": ["email", "role"]
+    }
+  },
+  "firestore": {
+    "projects/{projectId}": {
+      "schema": { "$ref": "#/entities/Project" },
+      "description": "Portfolio projects"
+    },
+    "services/{serviceId}": {
+      "schema": { "$ref": "#/entities/Service" },
+      "description": "Services offered"
+    },
+    "settings/{settingId}": {
+      "schema": { "$ref": "#/entities/Setting" },
+      "description": "App settings like logo url, site name"
+    },
+    "messages/{messageId}": {
+      "schema": { "$ref": "#/entities/Message" },
+      "description": "Contact form submissions"
+    },
+    "admins/{adminId}": {
+      "schema": { "$ref": "#/entities/Admin" },
+      "description": "Admin users allowed to login"
+    }
+  }
+}

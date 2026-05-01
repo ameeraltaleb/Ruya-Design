@@ -1,0 +1,110 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 0. Global Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // 3. Primitive Definition
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+    
+    function incoming() {
+      return request.resource.data;
+    }
+    
+    function existing() {
+      return resource.data;
+    }
+    
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    
+    function isAdmin() {
+      return isSignedIn() && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+
+    // Validators
+    function isValidProject(data) {
+      return data.keys().hasAll(['title', 'category', 'image', 'createdAt']) &&
+             data.keys().size() == 4 && // Exactly 4 keys
+             data.title is string && data.title.size() > 0 && data.title.size() <= 200 &&
+             data.category is string && data.category.size() > 0 && data.category.size() <= 100 &&
+             data.image is string && data.image.size() <= 1000 &&
+             data.createdAt is number;
+    }
+
+    function isValidService(data) {
+      return data.keys().hasAll(['title', 'icon', 'description', 'createdAt']) &&
+             data.keys().size() == 4 &&
+             data.title is string && data.title.size() > 0 && data.title.size() <= 200 &&
+             data.icon is string && data.icon.size() > 0 && data.icon.size() <= 100 &&
+             data.description is string && data.description.size() > 0 && data.description.size() <= 1000 &&
+             data.createdAt is number;
+    }
+
+    function isValidSetting(data) {
+      return data.keys().hasAll(['value', 'updatedAt']) &&
+             data.keys().size() == 2 &&
+             data.value is string && data.value.size() <= 2000 &&
+             data.updatedAt is number;
+    }
+
+    function isValidMessage(data) {
+      return data.keys().hasAll(['name', 'email', 'message', 'createdAt', 'status']) &&
+             data.keys().size() == 5 &&
+             data.name is string && data.name.size() > 0 && data.name.size() <= 100 &&
+             data.email is string && data.email.size() > 0 && data.email.size() <= 100 &&
+             data.message is string && data.message.size() > 0 && data.message.size() <= 2000 &&
+             data.createdAt is number &&
+             data.status in ['new', 'read'];
+    }
+
+    // Projects
+    match /projects/{projectId} {
+      allow get: if isValidId(projectId);
+      allow list: if true; // Public read
+      allow create: if isAdmin() && isValidId(projectId) && isValidProject(incoming()) && incoming().createdAt == request.time.toMillis();
+      allow update: if isAdmin() && isValidId(projectId) && isValidProject(incoming()) && incoming().createdAt == existing().createdAt;
+      allow delete: if isAdmin() && isValidId(projectId);
+    }
+
+    // Services
+    match /services/{serviceId} {
+      allow get: if isValidId(serviceId);
+      allow list: if true;
+      allow create: if isAdmin() && isValidId(serviceId) && isValidService(incoming()) && incoming().createdAt == request.time.toMillis();
+      allow update: if isAdmin() && isValidId(serviceId) && isValidService(incoming()) && incoming().createdAt == existing().createdAt;
+      allow delete: if isAdmin() && isValidId(serviceId);
+    }
+
+    // Settings
+    match /settings/{settingId} {
+      allow get: if isValidId(settingId);
+      allow list: if true;
+      allow create: if isAdmin() && isValidId(settingId) && isValidSetting(incoming()) && incoming().updatedAt == request.time.toMillis();
+      allow update: if isAdmin() && isValidId(settingId) && isValidSetting(incoming());
+      allow delete: if isAdmin() && isValidId(settingId);
+    }
+
+    // Messages
+    match /messages/{messageId} {
+      allow get: if isAdmin() && isValidId(messageId);
+      allow list: if isAdmin();
+      allow create: if isValidId(messageId) && isValidMessage(incoming()) && incoming().createdAt == request.time.toMillis() && incoming().status == 'new';
+      allow update: if isAdmin() && isValidId(messageId) && isValidMessage(incoming()) && incoming().createdAt == existing().createdAt && incoming().diff(existing()).affectedKeys().hasOnly(['status']);
+      allow delete: if isAdmin() && isValidId(messageId);
+    }
+
+    // Admins
+    match /admins/{adminId} {
+      allow get: if isAdmin() && isValidId(adminId);
+      allow list: if isAdmin();
+      // No creation/update through client-side to prevent privilege escalation
+    }
+  }
+}

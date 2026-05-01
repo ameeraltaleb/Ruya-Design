@@ -1,7 +1,41 @@
+import { useState } from "react";
 import { motion } from "motion/react";
 import { Send, Phone, Mail, MapPin, Instagram, Facebook, Twitter } from "lucide-react";
+import { collection, addDoc } from "firebase/firestore";
+import { db } from "../lib/firebase";
 
 export default function Contact() {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setSuccess(false);
+
+    try {
+      await addDoc(collection(db, "messages"), {
+        name,
+        email,
+        message,
+        createdAt: Date.now(),
+        status: "new",
+      });
+      setSuccess(true);
+      setName("");
+      setEmail("");
+      setMessage("");
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      alert("حدث خطأ أثناء الإرسال. يرجى المحاولة مرة أخرى.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <section id="contact" className="py-24 bg-white overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -24,7 +58,7 @@ export default function Contact() {
             <div className="space-y-8">
               {[
                 { icon: Phone, label: "رقم الهاتف", value: "+966 50 000 0000" },
-                { icon: Mail, label: "البريد الإلكتروني", value: "info@ruyadesign.com" },
+                { icon: Mail, label: "البريد الإلكتروني", value: "info@locospace.com" },
                 { icon: MapPin, label: "الموقع", value: "الرياض، المملكة العربية السعودية" },
               ].map((item, index) => (
                 <motion.div
@@ -70,50 +104,68 @@ export default function Contact() {
             viewport={{ once: true }}
             className="bg-ruya-bg p-8 md:p-12 rounded-[40px] border border-gray-100"
           >
-            <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
-              <div className="grid md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <label className="text-sm font-bold text-ruya-purple mr-2">الاسم الكامل</label>
-                  <input
-                    type="text"
-                    placeholder="أدخل اسمك"
-                    className="w-full bg-white border-2 border-transparent focus:border-ruya-yellow p-4 rounded-2xl outline-none transition-all"
-                  />
+            {success ? (
+              <div className="h-full flex flex-col items-center justify-center text-center space-y-4">
+                <div className="w-20 h-20 bg-green-100 text-green-500 rounded-full flex items-center justify-center mb-4">
+                  <Send size={40} />
+                </div>
+                <h3 className="text-2xl font-bold text-ruya-purple">تم استلام طلبك بنجاح!</h3>
+                <p className="text-gray-600">سنتواصل معك في أقرب وقت ممكن.</p>
+                <button
+                  onClick={() => setSuccess(false)}
+                  className="px-6 py-2 mt-4 bg-ruya-purple text-white rounded-xl hover:bg-ruya-yellow transition-colors"
+                >
+                  إرسال رسالة أخرى
+                </button>
+              </div>
+            ) : (
+              <form className="space-y-6" onSubmit={handleSubmit}>
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-sm font-bold text-ruya-purple mr-2">الاسم الكامل</label>
+                    <input
+                      type="text"
+                      required
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      placeholder="أدخل اسمك"
+                      className="w-full bg-white border-2 border-transparent focus:border-ruya-yellow p-4 rounded-2xl outline-none transition-all"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-bold text-ruya-purple mr-2">البريد الإلكتروني</label>
+                    <input
+                      type="email"
+                      required
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="example@mail.com"
+                      className="w-full bg-white border-2 border-transparent focus:border-ruya-yellow p-4 rounded-2xl outline-none transition-all text-left"
+                      dir="ltr"
+                    />
+                  </div>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-bold text-ruya-purple mr-2">رقم الجوال</label>
-                  <input
-                    type="tel"
-                    placeholder="05xxxxxxx"
-                    className="w-full bg-white border-2 border-transparent focus:border-ruya-yellow p-4 rounded-2xl outline-none transition-all"
+                  <label className="text-sm font-bold text-ruya-purple mr-2">الرسالة أو التفاصيل</label>
+                  <textarea
+                    required
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    placeholder="كيف يمكننا مساعدتك؟"
+                    rows={4}
+                    className="w-full bg-white border-2 border-transparent focus:border-ruya-yellow p-4 rounded-2xl outline-none transition-all resize-none"
                   />
                 </div>
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-bold text-ruya-purple mr-2">نوع الخدمة</label>
-                <select className="w-full bg-white border-2 border-transparent focus:border-ruya-yellow p-4 rounded-2xl outline-none transition-all bg-no-repeat appearance-none">
-                  <option>تصميم جرافيكي</option>
-                  <option>طباعة وإنتاج</option>
-                  <option>هوية تجارية</option>
-                  <option>أخرى</option>
-                </select>
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-bold text-ruya-purple mr-2">الرسالة</label>
-                <textarea
-                  placeholder="كيف يمكننا مساعدتك؟"
-                  rows={4}
-                  className="w-full bg-white border-2 border-transparent focus:border-ruya-yellow p-4 rounded-2xl outline-none transition-all resize-none"
-                />
-              </div>
-              <button
-                type="submit"
-                className="w-full bg-ruya-purple text-white font-black text-xl py-5 rounded-2xl flex items-center justify-center gap-3 hover:bg-ruya-yellow hover:text-ruya-purple transition-all shadow-xl shadow-ruya-purple/20"
-              >
-                إرسال الطلب
-                <Send size={24} />
-              </button>
-            </form>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full bg-ruya-purple text-white font-black text-xl py-5 rounded-2xl flex items-center justify-center gap-3 hover:bg-ruya-yellow hover:text-ruya-purple transition-all shadow-xl shadow-ruya-purple/20 disabled:opacity-50"
+                >
+                  {loading ? "جاري الإرسال..." : "إرسال الطلب"}
+                  {!loading && <Send size={24} />}
+                </button>
+              </form>
+            )}
           </motion.div>
         </div>
       </div>
