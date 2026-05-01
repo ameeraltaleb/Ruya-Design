@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { collection, addDoc } from "firebase/firestore";
 import { db } from "../lib/firebase";
+import { useContactInfo } from "../lib/useContactInfo";
 
 export default function Contact() {
   const [name, setName] = useState("");
@@ -18,6 +19,7 @@ export default function Contact() {
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const { contactInfo } = useContactInfo();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -65,16 +67,16 @@ export default function Contact() {
 
             <div className="space-y-8">
               {[
-                { icon: Phone, label: "رقم الهاتف", value: "+966 50 000 0000" },
+                { icon: Phone, label: "رقم الهاتف", value: contactInfo.phone },
                 {
                   icon: Mail,
                   label: "البريد الإلكتروني",
-                  value: "info@locospace.com",
+                  value: contactInfo.email,
                 },
                 {
                   icon: MapPin,
                   label: "الموقع",
-                  value: "الرياض، المملكة العربية السعودية",
+                  value: contactInfo.address,
                 },
               ].map((item, index) => (
                 <motion.div
@@ -92,7 +94,10 @@ export default function Contact() {
                     <h4 className="text-sm text-gray-500 font-bold mb-1">
                       {item.label}
                     </h4>
-                    <p className="text-xl font-bold text-ruya-purple">
+                    <p
+                      className="text-xl font-bold text-ruya-purple"
+                      dir="auto"
+                    >
                       {item.value}
                     </p>
                   </div>
@@ -105,16 +110,39 @@ export default function Contact() {
                 تابعنا على
               </h4>
               <div className="flex gap-4">
-                {[Instagram, Facebook, Twitter].map((SocialIcon, index) => (
+                {contactInfo.instagram && contactInfo.instagram !== "#" && (
                   <motion.a
-                    key={index}
                     whileHover={{ y: -5, scale: 1.1 }}
-                    href="#"
+                    href={contactInfo.instagram}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="w-12 h-12 bg-ruya-purple text-white rounded-full flex items-center justify-center hover:bg-ruya-yellow transition-colors"
                   >
-                    <SocialIcon size={24} />
+                    <Instagram size={24} />
                   </motion.a>
-                ))}
+                )}
+                {contactInfo.facebook && contactInfo.facebook !== "#" && (
+                  <motion.a
+                    whileHover={{ y: -5, scale: 1.1 }}
+                    href={contactInfo.facebook}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-12 h-12 bg-ruya-purple text-white rounded-full flex items-center justify-center hover:bg-ruya-yellow transition-colors"
+                  >
+                    <Facebook size={24} />
+                  </motion.a>
+                )}
+                {contactInfo.twitter && contactInfo.twitter !== "#" && (
+                  <motion.a
+                    whileHover={{ y: -5, scale: 1.1 }}
+                    href={contactInfo.twitter}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-12 h-12 bg-ruya-purple text-white rounded-full flex items-center justify-center hover:bg-ruya-yellow transition-colors"
+                  >
+                    <Twitter size={24} />
+                  </motion.a>
+                )}
               </div>
             </div>
           </div>

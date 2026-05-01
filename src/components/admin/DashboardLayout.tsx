@@ -10,6 +10,7 @@ import {
   Shield,
   Menu,
   X,
+  Phone,
 } from "lucide-react";
 import { auth } from "../../lib/firebase";
 import { onAuthStateChanged, signOut } from "firebase/auth";
@@ -58,6 +59,7 @@ export default function DashboardLayout() {
     { name: "الإحصائيات", href: "/admin/stats", icon: LayoutDashboard },
     { name: "الأعمال (Portfolio)", href: "/admin", icon: ImageIcon },
     { name: "آراء العملاء", href: "/admin/testimonials", icon: MessageSquare },
+    { name: "تواصل معنا", href: "/admin/contact", icon: Phone },
     { name: "الرسائل", href: "/admin/messages", icon: MessageSquare },
     { name: "المشرفين", href: "/admin/admins", icon: Shield },
     { name: "الإعدادات", href: "/admin/settings", icon: Settings },

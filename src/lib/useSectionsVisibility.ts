@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "./firebase";
 
 export interface SectionsVisibility {
@@ -30,21 +30,26 @@ export function useSectionsVisibility() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchVisibility = async () => {
-      try {
-        const docRef = doc(db, "settings", "sections_visibility");
-        const docSnap = await getDoc(docRef);
+    const docRef = doc(db, "settings", "sections_visibility");
+
+    const unsubscribe = onSnapshot(
+      docRef,
+      (docSnap) => {
         if (docSnap.exists() && docSnap.data().value) {
-          const fetched = JSON.parse(docSnap.data().value);
-          setVisibility({ ...DEFAULT_VISIBILITY, ...fetched });
+          try {
+            const fetched = JSON.parse(docSnap.data().value);
+            setVisibility({ ...DEFAULT_VISIBILITY, ...fetched });
+          } catch (e) {}
         }
-      } catch (error) {
-        console.error("Error fetching sections visibility:", error);
-      } finally {
         setLoading(false);
-      }
-    };
-    fetchVisibility();
+      },
+      (error) => {
+        console.error("Error fetching sections visibility:", error);
+        setLoading(false);
+      },
+    );
+
+    return () => unsubscribe();
   }, []);
 
   return { visibility, loading };

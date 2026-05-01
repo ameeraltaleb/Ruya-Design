@@ -1,8 +1,11 @@
 import { motion } from "motion/react";
 import { MessageCircle } from "lucide-react";
+import { useContactInfo } from "../lib/useContactInfo";
 
 export default function WhatsApp() {
-  const whatsappNumber = "966500000000"; // Replace with real number
+  const { contactInfo } = useContactInfo();
+  // Strip non-numeric characters for WhatsApp URL
+  const whatsappNumber = contactInfo.whatsapp.replace(/\D/g, "");
   const message = "مرحباً رؤية ديزاين، أرغب في الاستفسار عن خدماتكم.";
 
   const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
