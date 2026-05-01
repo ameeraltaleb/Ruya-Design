@@ -53,11 +53,19 @@ export default function Navbar() {
           <div className="flex-shrink-0 flex items-center">
             <a href="#home" className="flex items-center">
               {logoUrl ? (
-                <img
-                  src={logoUrl}
-                  alt="Logo"
-                  className="h-16 w-auto object-contain drop-shadow-sm"
-                />
+                logoUrl.startsWith("http") ||
+                logoUrl.startsWith("data:image") ||
+                logoUrl.startsWith("/") ? (
+                  <img
+                    src={logoUrl}
+                    alt="Logo"
+                    className="h-16 w-auto object-contain drop-shadow-sm"
+                  />
+                ) : (
+                  <span className="text-3xl font-extrabold text-white tracking-wider font-sans">
+                    {logoUrl}
+                  </span>
+                )
               ) : (
                 <div className="h-16 w-40 flex items-center justify-center border-2 border-dashed border-white/10 rounded-xl bg-white/5">
                   <span className="text-white/20 text-[10px] font-bold">

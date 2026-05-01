@@ -124,8 +124,24 @@ export default function SettingsAdmin() {
         <form onSubmit={handleSaveLogo} className="space-y-6">
           <div>
             <h2 className="text-xl font-bold mb-4">شعار الموقع</h2>
+
             <label className="block text-sm font-medium text-gray-300 mb-2">
-              (صورة بصيغة PNG أو SVG)
+              رابط الشعار (URL) أو نص الشعار
+            </label>
+            <input
+              type="text"
+              value={logoUrl}
+              onChange={(e) => setLogoUrl(e.target.value)}
+              placeholder="رؤية للتصميم أو https://example.com/logo.png"
+              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-ruya-yellow mb-6 text-left"
+              dir="auto"
+            />
+
+            <label className="block text-sm font-medium text-gray-300 mb-2 mt-4 text-center">
+              أو
+            </label>
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              رفع صورة بصيغة PNG أو SVG
             </label>
 
             <input
@@ -152,13 +168,23 @@ export default function SettingsAdmin() {
             </div>
 
             {logoUrl && (
-              <div className="mt-4 p-4 bg-white/5 border border-white/10 rounded-xl inline-block relative group">
+              <div className="mt-4 p-4 bg-white/5 border border-white/10 rounded-xl inline-block relative group min-w-[200px]">
                 <p className="text-sm text-gray-400 mb-2">معاينة:</p>
-                <img
-                  src={logoUrl}
-                  alt="Logo Preview"
-                  className="h-16 w-auto object-contain bg-white/5 p-2 rounded"
-                />
+                {logoUrl.startsWith("http") ||
+                logoUrl.startsWith("data:image") ||
+                logoUrl.startsWith("/") ? (
+                  <img
+                    src={logoUrl}
+                    alt="Logo Preview"
+                    className="h-16 w-auto object-contain bg-white/5 p-2 rounded"
+                  />
+                ) : (
+                  <div className="h-16 flex items-center justify-center p-2 rounded bg-white/5">
+                    <span className="text-2xl font-extrabold text-white tracking-wider font-sans">
+                      {logoUrl}
+                    </span>
+                  </div>
+                )}
                 <button
                   type="button"
                   onClick={() => {
