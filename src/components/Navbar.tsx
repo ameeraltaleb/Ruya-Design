@@ -8,11 +8,11 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const { scrollY } = useScroll();
   const logoUrl = useLogo();
-  
+
   const backgroundColor = useTransform(
     scrollY,
     [0, 100],
-    ["rgba(75, 42, 107, 0)", "rgba(75, 42, 107, 1)"]
+    ["rgba(75, 42, 107, 0)", "rgba(75, 42, 107, 1)"],
   );
 
   const [scrolled, setScrolled] = useState(false);
@@ -27,25 +27,35 @@ export default function Navbar() {
 
   return (
     <motion.nav
-      style={{ backgroundColor: scrolled ? "rgba(75, 42, 107, 1)" : "rgba(75, 42, 107, 0.9)" }}
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'shadow-2xl border-b-4 border-ruya-yellow h-20' : 'h-24'}`}
+      style={{
+        backgroundColor: scrolled
+          ? "rgba(75, 42, 107, 1)"
+          : "rgba(75, 42, 107, 0.9)",
+      }}
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "shadow-2xl border-b-4 border-ruya-yellow h-20" : "h-24"}`}
       initial={{ y: -100 }}
       animate={{ y: 0 }}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
         <div className="flex items-center justify-between h-full">
           <div className="flex-shrink-0 flex items-center">
-             <a href="#home" className="flex items-center">
-               {logoUrl ? (
-                 <img src={logoUrl} alt="Logo" className="h-16 w-auto object-contain drop-shadow-sm" />
-               ) : (
-                 <div className="h-16 w-40 flex items-center justify-center border-2 border-dashed border-white/10 rounded-xl bg-white/5">
-                   <span className="text-white/20 text-[10px] font-bold">LOGO SPACE</span>
-                 </div>
-               )}
-             </a>
+            <a href="#home" className="flex items-center">
+              {logoUrl ? (
+                <img
+                  src={logoUrl}
+                  alt="Logo"
+                  className="h-16 w-auto object-contain drop-shadow-sm"
+                />
+              ) : (
+                <div className="h-16 w-40 flex items-center justify-center border-2 border-dashed border-white/10 rounded-xl bg-white/5">
+                  <span className="text-white/20 text-[10px] font-bold">
+                    LOGO SPACE
+                  </span>
+                </div>
+              )}
+            </a>
           </div>
-          
+
           <div className="hidden md:flex items-center gap-8">
             <div className="flex items-baseline space-x-8 space-x-reverse">
               {NAVBAR_LINKS.map((link) => (
@@ -76,7 +86,7 @@ export default function Navbar() {
 
       {/* Mobile Menu */}
       {isOpen && (
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, height: 0 }}
           animate={{ opacity: 1, height: "auto" }}
           className="md:hidden bg-ruya-purple px-2 pt-2 pb-3 space-y-1 sm:px-3 border-t border-white/10"

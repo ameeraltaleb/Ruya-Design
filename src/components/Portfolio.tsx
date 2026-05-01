@@ -18,26 +18,34 @@ export default function Portfolio() {
 
   useEffect(() => {
     const q = query(collection(db, "projects"), orderBy("createdAt", "desc"));
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const data: Project[] = [];
-      snapshot.forEach((doc) => {
-        data.push({ id: doc.id, ...doc.data() } as Project);
-      });
-      setProjects(data);
-      setLoading(false);
-    }, (error) => {
-      console.error("Error fetching projects:", error);
-      setLoading(false);
-    });
+    const unsubscribe = onSnapshot(
+      q,
+      (snapshot) => {
+        const data: Project[] = [];
+        snapshot.forEach((doc) => {
+          data.push({ id: doc.id, ...doc.data() } as Project);
+        });
+        setProjects(data);
+        setLoading(false);
+      },
+      (error) => {
+        console.error("Error fetching projects:", error);
+        setLoading(false);
+      },
+    );
 
     return () => unsubscribe();
   }, []);
 
-  const CATEGORIES = ["الكل", ...Array.from(new Set(projects.map(p => p.category)))];
+  const CATEGORIES = [
+    "الكل",
+    ...Array.from(new Set(projects.map((p) => p.category))),
+  ];
 
-  const filteredProjects = activeCategory === "الكل" 
-    ? projects 
-    : projects.filter(project => project.category === activeCategory);
+  const filteredProjects =
+    activeCategory === "الكل"
+      ? projects
+      : projects.filter((project) => project.category === activeCategory);
 
   return (
     <section id="portfolio" className="py-24 bg-ruya-bg">
@@ -83,9 +91,7 @@ export default function Portfolio() {
             </div>
 
             {/* Project Grid */}
-            <div 
-              className="grid md:grid-cols-2 lg:grid-cols-3 gap-10"
-            >
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10">
               <AnimatePresence mode="popLayout">
                 {filteredProjects.map((project) => (
                   <motion.div
@@ -106,10 +112,14 @@ export default function Portfolio() {
                       />
                     </div>
                     <div className="absolute inset-0 bg-gradient-to-t from-ruya-purple via-transparent to-transparent opacity-80 z-10 transition-opacity group-hover:opacity-90" />
-                    
+
                     <div className="absolute bottom-8 right-8 left-8 text-white z-20 translate-y-4 group-hover:translate-y-0 transition-transform duration-500 text-right">
-                      <h3 className="text-2xl font-black mb-1">{project.title}</h3>
-                      <p className="text-sm text-ruya-yellow font-bold uppercase tracking-widest">{project.category}</p>
+                      <h3 className="text-2xl font-black mb-1">
+                        {project.title}
+                      </h3>
+                      <p className="text-sm text-ruya-yellow font-bold uppercase tracking-widest">
+                        {project.category}
+                      </p>
                     </div>
                   </motion.div>
                 ))}

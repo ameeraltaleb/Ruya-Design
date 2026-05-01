@@ -5,8 +5,12 @@
 
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
+import About from "./components/About";
+import Stats from "./components/Stats";
 import Services from "./components/Services";
 import Portfolio from "./components/Portfolio";
+import Testimonials from "./components/Testimonials";
+import Clients from "./components/Clients";
 import Contact from "./components/Contact";
 import WhatsApp from "./components/WhatsApp";
 import { motion } from "motion/react";
@@ -21,8 +25,12 @@ export default function App() {
       
       <main>
         <Hero />
+        <Clients />
+        <About />
         <Services />
+        <Stats />
         <Portfolio />
+        <Testimonials />
         <Contact />
       </main>
 

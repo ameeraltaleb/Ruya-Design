@@ -25,7 +25,11 @@ service cloud.firestore {
     }
     
     function isAdmin() {
-      return isSignedIn() && (exists(/databases/$(database)/documents/admins/$(request.auth.uid)) || request.auth.token.email == 'ameeraltaleb@gmail.com');
+      return isSignedIn() && (
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid)) || 
+        request.auth.token.email == 'ameeraltaleb@gmail.com' ||
+        request.auth.uid == '9WBftcFkQ2Sr3NpID6oheXcruJF2'
+      );
     }
 
     // Validators
@@ -34,7 +38,7 @@ service cloud.firestore {
              data.keys().size() == 4 && // Exactly 4 keys
              data.title is string && data.title.size() > 0 && data.title.size() <= 200 &&
              data.category is string && data.category.size() > 0 && data.category.size() <= 100 &&
-             data.image is string && data.image.size() <= 1000 &&
+             data.image is string && data.image.size() <= 1000000 &&
              data.createdAt is number;
     }
 
@@ -50,7 +54,7 @@ service cloud.firestore {
     function isValidSetting(data) {
       return data.keys().hasAll(['value', 'updatedAt']) &&
              data.keys().size() == 2 &&
-             data.value is string && data.value.size() <= 2000 &&
+             data.value is string && data.value.size() <= 1000000 &&
              data.updatedAt is number;
     }
 
@@ -76,8 +80,8 @@ service cloud.firestore {
     match /projects/{projectId} {
       allow get: if isValidId(projectId);
       allow list: if true; // Public read
-      allow create: if isAdmin() && isValidId(projectId) && isValidProject(incoming()) && incoming().createdAt == request.time.toMillis();
-      allow update: if isAdmin() && isValidId(projectId) && isValidProject(incoming()) && incoming().createdAt == existing().createdAt;
+      allow create: if isAdmin() && isValidId(projectId) && isValidProject(incoming());
+      allow update: if isAdmin() && isValidId(projectId) && isValidProject(incoming());
       allow delete: if isAdmin() && isValidId(projectId);
     }
 
@@ -85,8 +89,8 @@ service cloud.firestore {
     match /services/{serviceId} {
       allow get: if isValidId(serviceId);
       allow list: if true;
-      allow create: if isAdmin() && isValidId(serviceId) && isValidService(incoming()) && incoming().createdAt == request.time.toMillis();
-      allow update: if isAdmin() && isValidId(serviceId) && isValidService(incoming()) && incoming().createdAt == existing().createdAt;
+      allow create: if isAdmin() && isValidId(serviceId) && isValidService(incoming());
+      allow update: if isAdmin() && isValidId(serviceId) && isValidService(incoming());
       allow delete: if isAdmin() && isValidId(serviceId);
     }
 
@@ -94,7 +98,7 @@ service cloud.firestore {
     match /settings/{settingId} {
       allow get: if isValidId(settingId);
       allow list: if true;
-      allow create: if isAdmin() && isValidId(settingId) && isValidSetting(incoming()) && incoming().updatedAt == request.time.toMillis();
+      allow create: if isAdmin() && isValidId(settingId) && isValidSetting(incoming());
       allow update: if isAdmin() && isValidId(settingId) && isValidSetting(incoming());
       allow delete: if isAdmin() && isValidId(settingId);
     }
@@ -103,8 +107,8 @@ service cloud.firestore {
     match /messages/{messageId} {
       allow get: if isAdmin() && isValidId(messageId);
       allow list: if isAdmin();
-      allow create: if isValidId(messageId) && isValidMessage(incoming()) && incoming().createdAt == request.time.toMillis() && incoming().status == 'new';
-      allow update: if isAdmin() && isValidId(messageId) && isValidMessage(incoming()) && incoming().createdAt == existing().createdAt && incoming().diff(existing()).affectedKeys().hasOnly(['status']);
+      allow create: if isValidId(messageId) && isValidMessage(incoming()) && incoming().status == 'new';
+      allow update: if isAdmin() && isValidId(messageId) && isValidMessage(incoming()) && incoming().diff(existing()).affectedKeys().hasOnly(['status']);
       allow delete: if isAdmin() && isValidId(messageId);
     }
 
@@ -112,7 +116,7 @@ service cloud.firestore {
     match /admins/{adminId} {
       allow get: if isAdmin() && isValidId(adminId);
       allow list: if isAdmin();
-      allow create: if isAdmin() && isValidId(adminId) && isValidAdmin(incoming()) && incoming().createdAt == request.time.toMillis();
+      allow create: if isAdmin() && isValidId(adminId) && isValidAdmin(incoming());
       allow delete: if isAdmin() && isValidId(adminId) && adminId != request.auth.uid;
     }
   }

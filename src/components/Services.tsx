@@ -1,6 +1,16 @@
 import { motion } from "motion/react";
 import { useState, useEffect } from "react";
-import { Palette, Printer, Briefcase, Layout, Video, Monitor, Store, PenTool, Search } from "lucide-react";
+import {
+  Palette,
+  Printer,
+  Briefcase,
+  Layout,
+  Video,
+  Monitor,
+  Store,
+  PenTool,
+  Search,
+} from "lucide-react";
 import { collection, onSnapshot, query, orderBy } from "firebase/firestore";
 import { db } from "../lib/firebase";
 
@@ -13,7 +23,7 @@ const iconMap = {
   Monitor: Monitor,
   Store: Store,
   PenTool: PenTool,
-  Search: Search
+  Search: Search,
 };
 
 interface Service {
@@ -29,18 +39,22 @@ export default function Services() {
 
   useEffect(() => {
     const q = query(collection(db, "services"), orderBy("createdAt", "asc"));
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const data: Service[] = [];
-      snapshot.forEach((doc) => {
-        data.push({ id: doc.id, ...doc.data() } as Service);
-      });
-      // Fallback fallback to constant if empty, but for now we expect empty 
-      setServices(data);
-      setLoading(false);
-    }, (error) => {
-      console.error("Error fetching services:", error);
-      setLoading(false);
-    });
+    const unsubscribe = onSnapshot(
+      q,
+      (snapshot) => {
+        const data: Service[] = [];
+        snapshot.forEach((doc) => {
+          data.push({ id: doc.id, ...doc.data() } as Service);
+        });
+        // Fallback fallback to constant if empty, but for now we expect empty
+        setServices(data);
+        setLoading(false);
+      },
+      (error) => {
+        console.error("Error fetching services:", error);
+        setLoading(false);
+      },
+    );
 
     return () => unsubscribe();
   }, []);
@@ -64,7 +78,8 @@ export default function Services() {
             className="h-1.5 bg-ruya-yellow mx-auto rounded-full"
           />
           <p className="mt-6 text-gray-600 max-w-2xl mx-auto text-lg font-medium">
-            نقدم مجموعة متكاملة من الخدمات التي تلبي احتياجات أعمالك في التصميم والإنتاج الفني
+            نقدم مجموعة متكاملة من الخدمات التي تلبي احتياجات أعمالك في التصميم
+            والإنتاج الفني
           </p>
         </div>
 
@@ -73,11 +88,14 @@ export default function Services() {
             <div className="w-12 h-12 border-4 border-ruya-purple border-t-white rounded-full animate-spin"></div>
           </div>
         ) : services.length === 0 ? (
-          <div className="text-center text-gray-500 py-12">لا يوجد خدمات مضافة حالياً. يرجى إضافتها من لوحة الإدارة.</div>
+          <div className="text-center text-gray-500 py-12">
+            لا يوجد خدمات مضافة حالياً. يرجى إضافتها من لوحة الإدارة.
+          </div>
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {services.map((service, index) => {
-              const Icon = iconMap[service.icon as keyof typeof iconMap] || Palette;
+              const Icon =
+                iconMap[service.icon as keyof typeof iconMap] || Palette;
               return (
                 <motion.div
                   key={service.id}
@@ -90,8 +108,12 @@ export default function Services() {
                   <div className="w-16 h-16 bg-ruya-purple/5 text-ruya-purple rounded-2xl flex items-center justify-center mb-6 group-hover:bg-ruya-purple group-hover:text-ruya-yellow transition-colors duration-300">
                     <Icon size={32} />
                   </div>
-                  <h3 className="text-2xl font-black text-ruya-purple mb-4">{service.title}</h3>
-                  <p className="text-slate-500 leading-relaxed font-bold text-sm tracking-wide">{service.description}</p>
+                  <h3 className="text-2xl font-black text-ruya-purple mb-4">
+                    {service.title}
+                  </h3>
+                  <p className="text-slate-500 leading-relaxed font-bold text-sm tracking-wide">
+                    {service.description}
+                  </p>
                 </motion.div>
               );
             })}

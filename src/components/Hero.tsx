@@ -1,5 +1,15 @@
 import { motion } from "motion/react";
-import { ArrowLeft } from "lucide-react";
+import {
+  ArrowLeft,
+  Palette,
+  Printer,
+  PenTool,
+  Layout,
+  Monitor,
+  Brush,
+  Layers,
+  Type,
+} from "lucide-react";
 import { useState, useEffect } from "react";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../lib/firebase";
@@ -16,14 +26,16 @@ interface HeroData {
 }
 
 const DEFAULT_HERO: HeroData = {
-  subtitle: 'وكالة إبداعية متكاملة',
-  title_prefix: 'رؤية',
-  title_highlight: 'للتصميم',
-  slogan: 'New World, New Thinking ...',
-  description: 'نحن نصمم المستقبل بهوية بصرية قوية وحلول طباعية مبتكرة. فريقنا يجمع بين الفن والتكنولوجيا لتقديم تجربة لا تُنسى لعلامتك التجارية.',
-  button1_text: 'استعرض أعمالنا',
-  button2_text: 'احصل على استشارة',
-  image_url: 'https://images.unsplash.com/photo-1626785774573-4b799315345d?auto=format&fit=crop&q=80&w=1000'
+  subtitle: "وكالة إبداعية متكاملة",
+  title_prefix: "رؤية",
+  title_highlight: "للتصميم",
+  slogan: "New World, New Thinking ...",
+  description:
+    "نحن نصمم المستقبل بهوية بصرية قوية وحلول طباعية مبتكرة. فريقنا يجمع بين الفن والتكنولوجيا لتقديم تجربة لا تُنسى لعلامتك التجارية.",
+  button1_text: "استعرض أعمالنا",
+  button2_text: "احصل على استشارة",
+  image_url:
+    "https://images.unsplash.com/photo-1626785774573-4b799315345d?auto=format&fit=crop&q=80&w=1000",
 };
 
 export default function Hero() {
@@ -32,7 +44,7 @@ export default function Hero() {
   useEffect(() => {
     const fetchHeroData = async () => {
       try {
-        const docRef = doc(db, 'settings', 'hero');
+        const docRef = doc(db, "settings", "hero");
         const docSnap = await getDoc(docRef);
         if (docSnap.exists() && docSnap.data().value) {
           setData(JSON.parse(docSnap.data().value));
@@ -45,7 +57,10 @@ export default function Hero() {
   }, []);
 
   return (
-    <section id="home" className="relative min-h-screen flex items-center pt-24 overflow-hidden bg-ruya-bg">
+    <section
+      id="home"
+      className="relative min-h-screen flex items-center pt-24 overflow-hidden bg-ruya-bg"
+    >
       {/* Background decoration */}
       <div className="absolute top-0 left-0 w-full h-full opacity-50 pointer-events-none">
         <div className="absolute top-[10%] left-[10%] w-[30%] h-[30%] bg-ruya-purple/5 rounded-full blur-[100px]" />
@@ -61,7 +76,7 @@ export default function Hero() {
           >
             {data.subtitle}
           </motion.div>
-          
+
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -102,9 +117,16 @@ export default function Hero() {
               { label: "دعم فني", value: "24/7" },
               { label: "جودة طباعة", value: "100%" },
             ].map((stat) => (
-              <div key={stat.label} className="bg-white p-4 rounded-xl shadow-sm border border-slate-100 text-right">
-                <h4 className="text-ruya-purple font-black text-2xl">{stat.value}</h4>
-                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">{stat.label}</p>
+              <div
+                key={stat.label}
+                className="bg-white p-4 rounded-xl shadow-sm border border-slate-100 text-right"
+              >
+                <h4 className="text-ruya-purple font-black text-2xl">
+                  {stat.value}
+                </h4>
+                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
+                  {stat.label}
+                </p>
               </div>
             ))}
           </motion.div>
@@ -139,34 +161,151 @@ export default function Hero() {
             className="relative bg-slate-200 h-[350px] md:h-[450px] lg:h-[500px] rounded-[40px] md:rounded-[60px] overflow-hidden shadow-2xl border-[8px] md:border-[12px] border-white"
           >
             <div className="absolute inset-0 bg-gradient-to-t from-ruya-purple/80 via-transparent to-transparent z-10" />
-            <img 
-              src={data.image_url} 
+            <img
+              src={data.image_url}
               className="w-full h-full object-cover transform scale-110"
               alt="Creative Space"
               referrerPolicy="no-referrer"
             />
             <div className="absolute bottom-10 right-10 left-10 text-white z-20 text-left">
-              <h3 className="text-3xl font-black mb-2 uppercase">Innovative Hub</h3>
-              <p className="text-ruya-yellow font-bold uppercase tracking-widest text-sm">EST. 2024</p>
+              <h3 className="text-3xl font-black mb-2 uppercase">
+                Innovative Hub
+              </h3>
+              <p className="text-ruya-yellow font-bold uppercase tracking-widest text-sm">
+                EST. 2024
+              </p>
             </div>
           </motion.div>
         </div>
       </div>
-      
+
       {/* Floating element for visual interest */}
       <motion.div
-        animate={{ 
+        animate={{
           y: [0, -20, 0],
-          rotate: [0, 5, 0]
+          rotate: [0, 5, 0],
         }}
-        transition={{ 
+        transition={{
           repeat: Infinity,
           duration: 6,
-          ease: "easeInOut"
+          ease: "easeInOut",
         }}
-        className="absolute right-[10%] top-[20%] hidden lg:block"
+        className="absolute right-[5%] top-[15%] opacity-20 lg:opacity-40 z-0 text-ruya-purple"
       >
-        <div className="w-64 h-64 border-4 border-ruya-yellow opacity-20 rounded-3xl rotate-12" />
+        <Palette size={48} strokeWidth={1} />
+      </motion.div>
+
+      <motion.div
+        animate={{
+          y: [0, 30, 0],
+          rotate: [0, -10, 0],
+        }}
+        transition={{
+          repeat: Infinity,
+          duration: 8,
+          ease: "easeInOut",
+          delay: 1,
+        }}
+        className="absolute left-[8%] md:left-[45%] top-[20%] opacity-20 lg:opacity-40 z-0 text-ruya-yellow"
+      >
+        <PenTool size={64} strokeWidth={1} />
+      </motion.div>
+
+      <motion.div
+        animate={{
+          y: [0, -15, 0],
+          rotate: [0, 15, 0],
+        }}
+        transition={{
+          repeat: Infinity,
+          duration: 5,
+          ease: "easeInOut",
+          delay: 2,
+        }}
+        className="absolute left-[15%] md:left-[35%] bottom-[15%] md:bottom-[30%] opacity-15 lg:opacity-30 z-0 text-ruya-purple"
+      >
+        <Printer size={42} strokeWidth={1} />
+      </motion.div>
+
+      <motion.div
+        animate={{
+          y: [0, 25, 0],
+          rotate: [0, -5, 0],
+        }}
+        transition={{
+          repeat: Infinity,
+          duration: 7,
+          ease: "easeInOut",
+          delay: 0.5,
+        }}
+        className="absolute right-[20%] md:right-[40%] top-[5%] md:top-[10%] opacity-15 lg:opacity-30 z-0 text-ruya-purple"
+      >
+        <Layout size={36} strokeWidth={1} />
+      </motion.div>
+
+      <motion.div
+        animate={{
+          y: [0, -20, 0],
+          scale: [1, 1.1, 1],
+        }}
+        transition={{
+          repeat: Infinity,
+          duration: 6,
+          ease: "easeInOut",
+          delay: 1.5,
+        }}
+        className="absolute right-[10%] md:right-[25%] bottom-[5%] md:bottom-[15%] opacity-10 lg:opacity-20 z-0 text-ruya-yellow"
+      >
+        <Monitor size={56} strokeWidth={1} />
+      </motion.div>
+
+      {/* New left-side focused design icons */}
+      <motion.div
+        animate={{
+          y: [0, -15, 0],
+          rotate: [0, 10, 0],
+        }}
+        transition={{
+          repeat: Infinity,
+          duration: 5.5,
+          ease: "easeInOut",
+          delay: 2.5,
+        }}
+        className="absolute left-[5%] top-[50%] md:top-[60%] opacity-15 lg:opacity-30 z-0 text-ruya-yellow"
+      >
+        <Brush size={42} strokeWidth={1} />
+      </motion.div>
+
+      <motion.div
+        animate={{
+          y: [0, 20, 0],
+          rotate: [0, -15, 0],
+        }}
+        transition={{
+          repeat: Infinity,
+          duration: 7,
+          ease: "easeInOut",
+          delay: 1.2,
+        }}
+        className="absolute left-[12%] bottom-[40%] opacity-15 lg:opacity-30 z-0 text-ruya-purple"
+      >
+        <Layers size={48} strokeWidth={1} />
+      </motion.div>
+
+      <motion.div
+        animate={{
+          y: [0, -25, 0],
+          scale: [1, 1.05, 1],
+        }}
+        transition={{
+          repeat: Infinity,
+          duration: 6.5,
+          ease: "easeInOut",
+          delay: 0.8,
+        }}
+        className="absolute left-[20%] top-[10%] md:top-[35%] opacity-10 lg:opacity-20 z-0 text-ruya-purple"
+      >
+        <Type size={36} strokeWidth={1} />
       </motion.div>
     </section>
   );

@@ -1,6 +1,14 @@
 import { useState } from "react";
 import { motion } from "motion/react";
-import { Send, Phone, Mail, MapPin, Instagram, Facebook, Twitter } from "lucide-react";
+import {
+  Send,
+  Phone,
+  Mail,
+  MapPin,
+  Instagram,
+  Facebook,
+  Twitter,
+} from "lucide-react";
 import { collection, addDoc } from "firebase/firestore";
 import { db } from "../lib/firebase";
 
@@ -40,7 +48,6 @@ export default function Contact() {
     <section id="contact" className="py-24 bg-white overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid lg:grid-cols-2 gap-16">
-          
           {/* Contact Info */}
           <div>
             <motion.h2
@@ -52,14 +59,23 @@ export default function Contact() {
               تواصل معنا
             </motion.h2>
             <p className="text-gray-600 text-lg mb-12">
-              لديك مشروع جديد؟ نحن هنا للمساعدة. تواصل معنا اليوم لمناقشة أفكارك وكيف يمكننا تحويلها إلى واقع ملموس.
+              لديك مشروع جديد؟ نحن هنا للمساعدة. تواصل معنا اليوم لمناقشة أفكارك
+              وكيف يمكننا تحويلها إلى واقع ملموس.
             </p>
 
             <div className="space-y-8">
               {[
                 { icon: Phone, label: "رقم الهاتف", value: "+966 50 000 0000" },
-                { icon: Mail, label: "البريد الإلكتروني", value: "info@locospace.com" },
-                { icon: MapPin, label: "الموقع", value: "الرياض، المملكة العربية السعودية" },
+                {
+                  icon: Mail,
+                  label: "البريد الإلكتروني",
+                  value: "info@locospace.com",
+                },
+                {
+                  icon: MapPin,
+                  label: "الموقع",
+                  value: "الرياض، المملكة العربية السعودية",
+                },
               ].map((item, index) => (
                 <motion.div
                   key={item.label}
@@ -73,15 +89,21 @@ export default function Contact() {
                     <item.icon size={24} />
                   </div>
                   <div>
-                    <h4 className="text-sm text-gray-500 font-bold mb-1">{item.label}</h4>
-                    <p className="text-xl font-bold text-ruya-purple">{item.value}</p>
+                    <h4 className="text-sm text-gray-500 font-bold mb-1">
+                      {item.label}
+                    </h4>
+                    <p className="text-xl font-bold text-ruya-purple">
+                      {item.value}
+                    </p>
                   </div>
                 </motion.div>
               ))}
             </div>
 
             <div className="mt-12">
-              <h4 className="text-xl font-bold text-ruya-purple mb-6">تابعنا على</h4>
+              <h4 className="text-xl font-bold text-ruya-purple mb-6">
+                تابعنا على
+              </h4>
               <div className="flex gap-4">
                 {[Instagram, Facebook, Twitter].map((SocialIcon, index) => (
                   <motion.a
@@ -109,7 +131,9 @@ export default function Contact() {
                 <div className="w-20 h-20 bg-green-100 text-green-500 rounded-full flex items-center justify-center mb-4">
                   <Send size={40} />
                 </div>
-                <h3 className="text-2xl font-bold text-ruya-purple">تم استلام طلبك بنجاح!</h3>
+                <h3 className="text-2xl font-bold text-ruya-purple">
+                  تم استلام طلبك بنجاح!
+                </h3>
                 <p className="text-gray-600">سنتواصل معك في أقرب وقت ممكن.</p>
                 <button
                   onClick={() => setSuccess(false)}
@@ -122,7 +146,9 @@ export default function Contact() {
               <form className="space-y-6" onSubmit={handleSubmit}>
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <label className="text-sm font-bold text-ruya-purple mr-2">الاسم الكامل</label>
+                    <label className="text-sm font-bold text-ruya-purple mr-2">
+                      الاسم الكامل
+                    </label>
                     <input
                       type="text"
                       required
@@ -133,7 +159,9 @@ export default function Contact() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm font-bold text-ruya-purple mr-2">البريد الإلكتروني</label>
+                    <label className="text-sm font-bold text-ruya-purple mr-2">
+                      البريد الإلكتروني
+                    </label>
                     <input
                       type="email"
                       required
@@ -146,7 +174,9 @@ export default function Contact() {
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-bold text-ruya-purple mr-2">الرسالة أو التفاصيل</label>
+                  <label className="text-sm font-bold text-ruya-purple mr-2">
+                    الرسالة أو التفاصيل
+                  </label>
                   <textarea
                     required
                     value={message}

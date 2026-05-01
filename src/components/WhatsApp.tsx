@@ -4,7 +4,7 @@ import { MessageCircle } from "lucide-react";
 export default function WhatsApp() {
   const whatsappNumber = "966500000000"; // Replace with real number
   const message = "مرحباً رؤية ديزاين، أرغب في الاستفسار عن خدماتكم.";
-  
+
   const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
 
   return (

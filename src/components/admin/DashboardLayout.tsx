@@ -52,8 +52,12 @@ export default function DashboardLayout() {
 
   const links = [
     { name: "الواجهة الرئيسية", href: "/admin/hero", icon: ImageIcon },
-    { name: "الخدمات", href: "/admin/services", icon: ImageIcon },
+    { name: "العملاء (الشعارات)", href: "/admin/clients", icon: Users },
+    { name: "من نحن", href: "/admin/about", icon: Shield },
+    { name: "الخدمات", href: "/admin/services", icon: LayoutDashboard },
+    { name: "الإحصائيات", href: "/admin/stats", icon: LayoutDashboard },
     { name: "الأعمال (Portfolio)", href: "/admin", icon: ImageIcon },
+    { name: "آراء العملاء", href: "/admin/testimonials", icon: MessageSquare },
     { name: "الرسائل", href: "/admin/messages", icon: MessageSquare },
     { name: "المشرفين", href: "/admin/admins", icon: Shield },
     { name: "الإعدادات", href: "/admin/settings", icon: Settings },
