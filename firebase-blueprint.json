@@ -8,9 +8,10 @@
         "title": { "type": "string" },
         "category": { "type": "string" },
         "image": { "type": "string" },
+        "images": { "type": "array", "items": { "type": "string" } },
         "createdAt": { "type": "number", "description": "Timestamp" }
       },
-      "required": ["title", "category", "image"]
+      "required": ["title", "category"]
     },
     "Service": {
       "title": "Service",

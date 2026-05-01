@@ -15,7 +15,8 @@ interface Project {
   id: string;
   title: string;
   category: string;
-  image: string;
+  image?: string;
+  images?: string[];
   createdAt?: number;
 }
 
@@ -50,11 +51,15 @@ export default function ProjectsAdmin() {
 
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("");
-  const [image, setImage] = useState("");
-  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [customCategory, setCustomCategory] = useState("");
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [existingImages, setExistingImages] = useState<string[]>([]);
   const [isUploading, setIsUploading] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Extract unique categories from projects
+  const uniqueCategories = Array.from(new Set(projects.map(p => p.category))).filter(Boolean);
 
   useEffect(() => {
     const q = collection(db, "projects");
@@ -79,46 +84,64 @@ export default function ProjectsAdmin() {
   }, []);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setImageFile(e.target.files[0]);
-      // Clear URL input if file is selected
-      setImage("");
+    if (e.target.files && e.target.files.length > 0) {
+      setImageFiles((prev) => [...prev, ...Array.from(e.target.files!)]);
     }
   };
 
-  const uploadImageIfSelected = async (): Promise<string> => {
-    if (!imageFile) return image; // return existing URL if no file
+  const removeFile = (index: number) => {
+    setImageFiles((prev) => prev.filter((_, i) => i !== index));
+  };
+  
+  const removeExistingImage = (index: number) => {
+    setExistingImages((prev) => prev.filter((_, i) => i !== index));
+  };
 
-    const fileRef = ref(storage, `portfolio/${Date.now()}_${imageFile.name}`);
-    await uploadBytes(fileRef, imageFile);
-    return await getDownloadURL(fileRef);
+  const uploadImagesIfSelected = async (): Promise<string[]> => {
+    if (imageFiles.length === 0) return [];
+    
+    const uploadPromises = imageFiles.map(async (file) => {
+      const fileRef = ref(storage, `portfolio/${Date.now()}_${file.name}`);
+      await uploadBytes(fileRef, file);
+      return await getDownloadURL(fileRef);
+    });
+
+    return await Promise.all(uploadPromises);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!image && !imageFile && !editingId) {
-      alert("الرجاء إضافة صورة أو رابط الصورة!");
+    const finalCategory = category === "other" ? customCategory : category;
+
+    if (!finalCategory) {
+      alert("الرجاء اختيار أو كتابة تصنيف!");
+      return;
+    }
+
+    if (existingImages.length === 0 && imageFiles.length === 0) {
+      alert("الرجاء إضافة صورة واحدة على الأقل!");
       return;
     }
     
     try {
       setIsUploading(true);
-      const finalImageUrl = await uploadImageIfSelected();
+      const newUploadedUrls = await uploadImagesIfSelected();
+      const finalImages = [...existingImages, ...newUploadedUrls];
 
       const ts = Date.now();
       if (editingId) {
         const oldProj = projects.find((p) => p.id === editingId);
         await updateDoc(doc(db, "projects", editingId), {
           title,
-          category,
-          image: finalImageUrl || oldProj?.image,
+          category: finalCategory,
+          images: finalImages,
           createdAt: oldProj?.createdAt || ts,
         });
       } else {
         await addDoc(collection(db, "projects"), {
           title,
-          category,
-          image: finalImageUrl,
+          category: finalCategory,
+          images: finalImages,
           createdAt: ts,
         });
       }
@@ -143,9 +166,13 @@ export default function ProjectsAdmin() {
 
   const openEdit = (p: Project) => {
     setTitle(p.title);
-    setCategory(p.category);
-    setImage(p.image);
-    setImageFile(null);
+    setCategory(uniqueCategories.includes(p.category) ? p.category : "other");
+    if (!uniqueCategories.includes(p.category)) setCustomCategory(p.category);
+    
+    // Convert old `image` string to `images` array if necessary
+    const pImages = p.images ? p.images : (p.image ? [p.image] : []);
+    setExistingImages(pImages);
+    setImageFiles([]);
     setEditingId(p.id);
     if (fileInputRef.current) fileInputRef.current.value = "";
     setIsModalOpen(true);
@@ -154,8 +181,9 @@ export default function ProjectsAdmin() {
   const closeModal = () => {
     setTitle("");
     setCategory("");
-    setImage("");
-    setImageFile(null);
+    setCustomCategory("");
+    setExistingImages([]);
+    setImageFiles([]);
     setEditingId(null);
     if (fileInputRef.current) fileInputRef.current.value = "";
     setIsModalOpen(false);
@@ -180,13 +208,20 @@ export default function ProjectsAdmin() {
         {projects.map((p) => (
           <div
             key={p.id}
-            className="bg-white/5 border border-white/10 rounded-xl overflow-hidden group"
+            className="bg-white/5 border border-white/10 rounded-xl overflow-hidden group flex flex-col"
           >
-            <img
-              src={p.image}
-              alt={p.title}
-              className="w-full h-48 object-cover"
-            />
+            <div className="relative w-full h-48 overflow-hidden bg-black/20">
+              <img
+                src={p.images && p.images.length > 0 ? p.images[0] : p.image}
+                alt={p.title}
+                className="w-full h-full object-cover"
+              />
+              {p.images && p.images.length > 1 && (
+                <div className="absolute top-2 right-2 bg-black/60 text-white text-xs px-2 py-1 rounded-lg backdrop-blur-sm border border-white/10">
+                  +{p.images.length - 1} صور
+                </div>
+              )}
+            </div>
             <div className="p-4">
               <span className="text-ruya-yellow text-sm font-medium block mb-2">
                 {p.category}
@@ -242,24 +277,70 @@ export default function ProjectsAdmin() {
                 <label className="block text-sm font-medium text-gray-300 mb-2">
                   التصنيف
                 </label>
-                <input
-                  type="text"
+                <select
                   required
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-ruya-yellow"
-                  placeholder="مثال: تصميم، طباعة، هوية بصرية"
-                />
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-ruya-yellow mb-2 appearance-none"
+                >
+                  <option value="" disabled className="text-gray-900">اختر تصنيفاً</option>
+                  {uniqueCategories.map(cat => (
+                    <option key={cat} value={cat} className="text-gray-900">{cat}</option>
+                  ))}
+                  <option value="other" className="text-gray-900 bg-gray-200">تصنيف جديد...</option>
+                </select>
+                
+                {category === "other" && (
+                  <input
+                    type="text"
+                    required
+                    value={customCategory}
+                    onChange={(e) => setCustomCategory(e.target.value)}
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-ruya-yellow"
+                    placeholder="اكتب التصنيف الجديد هنا..."
+                  />
+                )}
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
-                  صورة العمل
+                  صور العمل
                 </label>
-                <div className="space-y-3">
+                <div className="space-y-4">
+                  {/* Gallery Preview */}
+                  {(existingImages.length > 0 || imageFiles.length > 0) && (
+                    <div className="grid grid-cols-4 gap-2">
+                      {existingImages.map((src, idx) => (
+                        <div key={`existing-${idx}`} className="relative aspect-square rounded-lg overflow-hidden border border-white/10 group">
+                          <img src={src} alt="preview" className="w-full h-full object-cover" />
+                          <button
+                            type="button"
+                            onClick={() => removeExistingImage(idx)}
+                            className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity"
+                          >
+                            <Trash2 className="w-5 h-5 text-red-500" />
+                          </button>
+                        </div>
+                      ))}
+                      {imageFiles.map((file, idx) => (
+                        <div key={`new-${idx}`} className="relative aspect-square rounded-lg overflow-hidden border border-white/10 border-dashed group">
+                          <img src={URL.createObjectURL(file)} alt="preview" className="w-full h-full object-cover" />
+                          <button
+                            type="button"
+                            onClick={() => removeFile(idx)}
+                            className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity"
+                          >
+                            <Trash2 className="w-5 h-5 text-red-500" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
                   <div className="relative">
                     <input
                       type="file"
                       accept="image/*"
+                      multiple
                       ref={fileInputRef}
                       onChange={handleFileChange}
                       className="hidden"
@@ -270,24 +351,9 @@ export default function ProjectsAdmin() {
                       className="flex items-center justify-center gap-2 w-full bg-white/5 border border-dashed border-white/20 rounded-xl px-4 py-6 text-gray-300 hover:bg-white/10 hover:border-white/40 transition-all cursor-pointer"
                     >
                       <Upload className="w-5 h-5 text-ruya-yellow" />
-                      <span>{imageFile ? imageFile.name : "رفع صورة من الجهاز"}</span>
+                      <span>إضافة صور (يمكن اختيار أكثر من صورة)</span>
                     </label>
                   </div>
-                  
-                  <div className="flex items-center gap-3 w-full">
-                    <div className="h-px bg-white/10 flex-1"></div>
-                    <span className="text-gray-500 text-xs">أو</span>
-                    <div className="h-px bg-white/10 flex-1"></div>
-                  </div>
-
-                  <input
-                    type="url"
-                    value={image}
-                    onChange={(e) => setImage(e.target.value)}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-ruya-yellow text-left"
-                    dir="ltr"
-                    placeholder="رابط مباشر للصورة (https://...)"
-                  />
                 </div>
               </div>
               <div className="pt-4 flex justify-end gap-3">

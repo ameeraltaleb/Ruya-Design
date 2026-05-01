@@ -33,11 +33,12 @@ service cloud.firestore {
     }
 
     function isValidProject(data) {
-      return data.keys().hasAll(['title', 'category', 'image']) &&
-             data.size() >= 3 && data.size() <= 4 &&
+      return data.keys().hasAll(['title', 'category']) &&
+             data.size() >= 2 && data.size() <= 5 &&
              data.title is string && data.title.size() <= 200 &&
              data.category is string && data.category.size() <= 100 &&
-             data.image is string && data.image.size() <= 1000 &&
+             (!('image' in data) || (data.image is string && data.image.size() <= 1000)) &&
+             (!('images' in data) || (data.images is list && data.images.size() <= 20 && (data.images.size() == 0 || data.images[0] is string))) &&
              (!('createdAt' in data) || isTimestamp(data.createdAt));
     }
 
@@ -71,7 +72,7 @@ service cloud.firestore {
       allow read: if true;
       allow create: if isAdmin() && isValidId(projectId) && isValidProject(incoming());
       allow update: if isAdmin() && isValidProject(incoming()) && (
-        incoming().diff(existing()).affectedKeys().hasOnly(['title', 'category', 'image'])
+        incoming().diff(existing()).affectedKeys().hasOnly(['title', 'category', 'image', 'images'])
       );
       allow delete: if isAdmin() && isValidId(projectId);
     }

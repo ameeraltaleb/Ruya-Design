@@ -22,7 +22,8 @@
     "react": "^19.0.1",
     "react-dom": "^19.0.1",
     "react-router-dom": "^6.30.3",
-    "vite": "^6.2.3"
+    "vite": "^6.2.3",
+    "yet-another-react-lightbox": "^3.31.0"
   },
   "devDependencies": {
     "@firebase/eslint-plugin-security-rules": "^0.0.2",
