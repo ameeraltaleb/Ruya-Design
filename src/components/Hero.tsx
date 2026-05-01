@@ -113,21 +113,22 @@ export default function Hero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.5 }}
-            className="grid grid-cols-2 sm:grid-cols-3 gap-3 md:gap-4 mb-10"
+            className="grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-4 mb-10"
           >
             {[
-              { label: "مشروع تصميم", value: "150+" },
-              { label: "دعم فني", value: "24/7" },
-              { label: "جودة طباعة", value: "100%" },
+              { label: "عميل", value: "+1300" },
+              { label: "مشروع", value: "+620" },
+              { label: "سنوات خبرة", value: "+13" },
+              { label: "مطبوعة تم تسليمها", value: "+15,000" },
             ].map((stat) => (
               <div
                 key={stat.label}
-                className="bg-white p-4 rounded-xl shadow-sm border border-slate-100 text-right"
+                className="bg-white/60 backdrop-blur-sm p-3 rounded-xl shadow-sm border border-slate-200/50 text-center flex flex-col justify-center min-h-[90px]"
               >
-                <h4 className="text-ruya-purple font-black text-2xl">
+                <h4 className="text-ruya-purple font-black text-xl md:text-2xl lg:text-3xl">
                   {stat.value}
                 </h4>
-                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
+                <p className="text-[10px] md:text-[11px] text-slate-500 font-bold uppercase tracking-wider mt-1">
                   {stat.label}
                 </p>
               </div>

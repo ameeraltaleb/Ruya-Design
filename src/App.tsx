@@ -6,7 +6,6 @@
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import About from "./components/About";
-import Stats from "./components/Stats";
 import Services from "./components/Services";
 import Portfolio from "./components/Portfolio";
 import Testimonials from "./components/Testimonials";
@@ -32,7 +31,6 @@ export default function App() {
         {visibility.clients && <Clients />}
         {visibility.about && <About />}
         {visibility.services && <Services />}
-        {visibility.stats && <Stats />}
         {visibility.portfolio && <Portfolio />}
         {visibility.testimonials && <Testimonials />}
         {visibility.contact && <Contact />}

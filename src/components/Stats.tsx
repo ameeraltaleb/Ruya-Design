@@ -13,9 +13,10 @@ export interface StatItem {
 
 export default function Stats() {
   const [stats, setStats] = useState<StatItem[]>([
-    { id: 1, name: "عميل", value: "+500", iconName: "Users" },
-    { id: 2, name: "مشروع مكتمل", value: "+120", iconName: "Briefcase" },
-    { id: 3, name: "سنوات الخبرة", value: "+10", iconName: "Clock" },
+    { id: 1, name: "عميل", value: "+1300", iconName: "Users" },
+    { id: 2, name: "مشروع", value: "+620", iconName: "Briefcase" },
+    { id: 3, name: "سنوات خبرة", value: "+13", iconName: "Clock" },
+    { id: 4, name: "جائزة إبداعية", value: "+25", iconName: "Award" },
   ]);
 
   useEffect(() => {
@@ -50,7 +51,7 @@ export default function Stats() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 md:gap-12 text-center">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 text-center">
           {stats.map((stat, index) => {
             const Icon =
               (LucideIcons as any)[stat.iconName] || LucideIcons.Star;
