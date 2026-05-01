@@ -1,4 +1,4 @@
-import { motion, useScroll, useTransform } from "motion/react";
+import { motion } from "motion/react";
 import { useState, useEffect } from "react";
 import { NAVBAR_LINKS } from "../constants";
 import { Menu, X } from "lucide-react";
@@ -7,7 +7,6 @@ import { useSectionsVisibility } from "../lib/useSectionsVisibility";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
-  const { scrollY } = useScroll();
   const logoUrl = useLogo();
   const { visibility } = useSectionsVisibility();
 
@@ -21,12 +20,6 @@ export default function Navbar() {
     return true;
   });
 
-  const backgroundColor = useTransform(
-    scrollY,
-    [0, 100],
-    ["rgba(75, 42, 107, 0)", "rgba(75, 42, 107, 1)"],
-  );
-
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -39,12 +32,7 @@ export default function Navbar() {
 
   return (
     <motion.nav
-      style={{
-        backgroundColor: scrolled
-          ? "rgba(75, 42, 107, 1)"
-          : "rgba(75, 42, 107, 0.9)",
-      }}
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "shadow-2xl border-b-4 border-ruya-yellow h-20" : "h-24"}`}
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "bg-ruya-purple shadow-2xl border-b-4 border-ruya-yellow h-20" : "bg-ruya-purple/95 backdrop-blur-md h-24"}`}
       initial={{ y: -100 }}
       animate={{ y: 0 }}
     >

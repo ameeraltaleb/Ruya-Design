@@ -81,7 +81,7 @@ export default function Hero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-[60px] md:text-[80px] leading-tight font-black text-ruya-purple tracking-tight mb-6 text-right"
+            className="text-5xl sm:text-[60px] md:text-[80px] leading-tight font-black text-ruya-purple tracking-tight mb-6 text-right"
           >
             {data.title_prefix}
             <br />
@@ -110,7 +110,7 @@ export default function Hero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.5 }}
-            className="grid grid-cols-3 gap-4 mb-10"
+            className="grid grid-cols-2 sm:grid-cols-3 gap-3 md:gap-4 mb-10"
           >
             {[
               { label: "مشروع تصميم", value: "150+" },
@@ -135,18 +135,18 @@ export default function Hero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.6 }}
-            className="flex flex-wrap gap-4"
+            className="flex flex-col sm:flex-row flex-wrap gap-4"
           >
             <a
               href="#portfolio"
-              className="bg-ruya-purple text-white px-8 py-4 rounded-full font-black text-sm uppercase shadow-[0_5px_0_rgb(50,30,80)] active:translate-y-1 transition-all flex items-center gap-2"
+              className="w-full sm:w-auto text-center justify-center bg-ruya-purple text-white px-8 py-4 rounded-full font-black text-sm uppercase shadow-[0_5px_0_rgb(50,30,80)] active:translate-y-1 transition-all flex items-center gap-2"
             >
               {data.button1_text}
               <ArrowLeft size={18} />
             </a>
             <a
               href="#contact"
-              className="bg-white border border-slate-200 text-slate-800 px-8 py-4 rounded-full font-black text-sm uppercase hover:bg-slate-50 transition-all shadow-sm"
+              className="w-full sm:w-auto text-center bg-white border border-slate-200 text-slate-800 px-8 py-4 rounded-full font-black text-sm uppercase hover:bg-slate-50 transition-all shadow-sm"
             >
               {data.button2_text}
             </a>

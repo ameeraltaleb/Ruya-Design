@@ -22,7 +22,7 @@ export default function App() {
   const { visibility } = useSectionsVisibility();
 
   return (
-    <div className="min-h-screen bg-ruya-bg">
+    <div className="min-h-screen bg-ruya-bg overflow-x-hidden">
       <Navbar />
 
       <main>
