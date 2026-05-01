@@ -58,19 +58,23 @@ export default function ProjectsAdmin() {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Extract unique categories from projects
-  const uniqueCategories = Array.from(new Set(projects.map(p => p.category))).filter(Boolean);
+  const [services, setServices] = useState<{id: string; title: string}[]>([]);
+
+  // Extract unique categories from projects and add services
+  const uniqueCategories = Array.from(new Set([
+    ...services.map(s => s.title),
+    ...projects.map(p => p.category)
+  ])).filter(Boolean);
 
   useEffect(() => {
-    const q = collection(db, "projects");
-    const unsubscribe = onSnapshot(
-      q,
+    const qProjects = collection(db, "projects");
+    const unsubscribeProjects = onSnapshot(
+      qProjects,
       (snapshot) => {
         const projs: Project[] = [];
         snapshot.forEach((doc) => {
           projs.push({ id: doc.id, ...doc.data() } as Project);
         });
-        // Sort by createdAt desc locally
         projs.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
         setProjects(projs);
         setLoading(false);
@@ -80,7 +84,25 @@ export default function ProjectsAdmin() {
       },
     );
 
-    return () => unsubscribe();
+    const qServices = collection(db, "services");
+    const unsubscribeServices = onSnapshot(
+      qServices,
+      (snapshot) => {
+        const servs: {id: string; title: string}[] = [];
+        snapshot.forEach((doc) => {
+          servs.push({ id: doc.id, title: doc.data().title });
+        });
+        setServices(servs);
+      },
+      (error) => {
+        handleFirestoreError(error, OperationType.LIST, "services");
+      }
+    );
+
+    return () => {
+      unsubscribeProjects();
+      unsubscribeServices();
+    }
   }, []);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {

@@ -17,6 +17,7 @@ interface Project {
 export default function Portfolio() {
   const [activeCategory, setActiveCategory] = useState("الكل");
   const [projects, setProjects] = useState<Project[]>([]);
+  const [services, setServices] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   
   const [lightboxOpen, setLightboxOpen] = useState(false);
@@ -24,9 +25,9 @@ export default function Portfolio() {
   const [lightboxSlides, setLightboxSlides] = useState<{src: string}[]>([]);
 
   useEffect(() => {
-    const q = query(collection(db, "projects"), orderBy("createdAt", "desc"));
-    const unsubscribe = onSnapshot(
-      q,
+    const qProjects = query(collection(db, "projects"), orderBy("createdAt", "desc"));
+    const unsubscribeProjects = onSnapshot(
+      qProjects,
       (snapshot) => {
         const data: Project[] = [];
         snapshot.forEach((doc) => {
@@ -41,12 +42,33 @@ export default function Portfolio() {
       },
     );
 
-    return () => unsubscribe();
+    const qServices = collection(db, "services");
+    const unsubscribeServices = onSnapshot(
+      qServices,
+      (snapshot) => {
+        const data: string[] = [];
+        snapshot.forEach((doc) => {
+          data.push(doc.data().title);
+        });
+        setServices(data);
+      },
+      (error) => {
+        console.error("Error fetching services:", error);
+      }
+    );
+
+    return () => {
+      unsubscribeProjects();
+      unsubscribeServices();
+    }
   }, []);
 
   const CATEGORIES = [
     "الكل",
-    ...Array.from(new Set(projects.map((p) => p.category))),
+    ...Array.from(new Set([
+      ...services,
+      ...projects.map((p) => p.category)
+    ])).filter(Boolean),
   ];
 
   const filteredProjects =
