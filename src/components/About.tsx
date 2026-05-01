@@ -51,7 +51,7 @@ export default function About() {
   return (
     <section
       id="about"
-      className="py-24 bg-slate-900 border-b border-white/10 overflow-hidden"
+      className="py-16 lg:py-24 bg-slate-900 border-b border-white/10 overflow-hidden"
       dir="rtl"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

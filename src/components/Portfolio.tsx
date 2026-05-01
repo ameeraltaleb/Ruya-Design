@@ -48,7 +48,7 @@ export default function Portfolio() {
       : projects.filter((project) => project.category === activeCategory);
 
   return (
-    <section id="portfolio" className="py-24 bg-ruya-bg">
+    <section id="portfolio" className="py-16 lg:py-24 bg-ruya-bg">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <motion.h2

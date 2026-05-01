@@ -47,7 +47,7 @@ export default function Contact() {
   };
 
   return (
-    <section id="contact" className="py-24 bg-white overflow-hidden">
+    <section id="contact" className="py-16 lg:py-24 bg-ruya-bg overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid lg:grid-cols-2 gap-16">
           {/* Contact Info */}
@@ -152,7 +152,7 @@ export default function Contact() {
             initial={{ opacity: 0, x: 20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            className="bg-ruya-bg p-8 md:p-12 rounded-[40px] border border-gray-100"
+            className="bg-white p-8 md:p-12 rounded-[40px] border border-gray-100 shadow-sm"
           >
             {success ? (
               <div className="h-full flex flex-col items-center justify-center text-center space-y-4">
