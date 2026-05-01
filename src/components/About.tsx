@@ -36,7 +36,7 @@ export default function About() {
               "خدمة عملاء متميزة",
             ],
             image_url:
-              "https://images.unsplash.com/photo-1600132806370-bf17e65e942f?q=80&w=2194&auto=format&fit=crop",
+              "",
           });
         }
       },
