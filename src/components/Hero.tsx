@@ -26,8 +26,7 @@ interface HeroData {
 }
 
 const DEFAULT_HERO: HeroData = {
-  subtitle: "وكالة إبداعية متكاملة",
-  title_prefix: "رؤية",
+  title_prefix: "رؤيــا",
   title_highlight: "للتصميم",
   slogan: "New World, New Thinking ...",
   description:

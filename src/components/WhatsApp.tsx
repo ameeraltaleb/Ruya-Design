@@ -8,7 +8,7 @@ export default function WhatsApp() {
   const whatsappNumber = contactInfo.whatsapp.replace(/\D/g, "");
   const message = "مرحباً رؤية ديزاين، أرغب في الاستفسار عن خدماتكم.";
 
-  const whatsappUrl = `https://wa.me/${905335942376}?text=${encodeURIComponent(message)}`;
+  const whatsappUrl = `https://wa.me/${905308995185}?text=${encodeURIComponent(message)}`;
 
   return (
     <motion.a

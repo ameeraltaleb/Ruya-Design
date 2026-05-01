@@ -19,13 +19,12 @@ export interface ContactInfo {
 }
 
 const DEFAULT_CONTACT_INFO: ContactInfo = {
-  phone: "+966 50 000 0000",
-  email: "info@locospace.com",
-  address: "الرياض، المملكة العربية السعودية",
+  phone: "+90 530 899 51 85",
+  address: "الريحانية،هاتاي / تركيا",
   instagram: "#",
   facebook: "#",
   twitter: "#",
-  whatsapp: "+966500000000",
+  whatsapp: "905308995185",
   footerText:
     "نقدم حلولاً إبداعية في عالم التصميم والطباعة، حيث نجمع بين الخبرة والابتكار لنضع علامتك التجارية في الصدارة.",
   workingHours: {

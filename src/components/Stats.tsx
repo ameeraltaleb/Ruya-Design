@@ -13,10 +13,9 @@ export interface StatItem {
 
 export default function Stats() {
   const [stats, setStats] = useState<StatItem[]>([
-    { id: 1, name: "عميل سعيد", value: "+500", iconName: "Users" },
-    { id: 2, name: "مشروع مكتمل", value: "+1200", iconName: "Briefcase" },
+    { id: 1, name: "عميل", value: "+500", iconName: "Users" },
+    { id: 2, name: "مشروع مكتمل", value: "+120", iconName: "Briefcase" },
     { id: 3, name: "سنوات الخبرة", value: "+10", iconName: "Clock" },
-    { id: 4, name: "جائزة إبداعية", value: "25", iconName: "Award" },
   ]);
 
   useEffect(() => {

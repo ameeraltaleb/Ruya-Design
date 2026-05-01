@@ -57,13 +57,12 @@ function handleFirestoreError(
 }
 
 const DEFAULT_CONTACT_INFO: ContactInfo = {
-  phone: "+966 50 000 0000",
-  email: "info@locospace.com",
-  address: "الرياض، المملكة العربية السعودية",
+  phone: "+90 530 899 51 85",
+  address: "الريحانية، هاتاي / تركيا",
   instagram: "#",
   facebook: "#",
   twitter: "#",
-  whatsapp: "+966 50 000 0000",
+  whatsapp: "+90 530 899 51 85",
 };
 
 export default function ContactAdmin() {
