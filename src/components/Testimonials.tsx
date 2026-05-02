@@ -61,11 +61,11 @@ export default function Testimonials() {
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
-            <h2 className="text-3xl md:text-5xl font-bold text-white mb-6">
-              آراء <span className="text-ruya-yellow">عملائنا</span>
+            <h2 className="text-3xl md:text-5xl font-bold text-slate-900 mb-6">
+              آراء <span className="text-ruya-purple">شركاء النجاح</span>
             </h2>
-            <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-              نفخر بثقة عملائنا ونسعى دائماً لتقديم الأفضل لهم.
+            <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+              كلمات نعتز بها، وقصص نجاح تدفعنا دائماً لتقديم إبداع يفوق التوقعات.
             </p>
           </motion.div>
         </div>

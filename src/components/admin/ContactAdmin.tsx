@@ -1,22 +1,18 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../../lib/supabase";
-import { Save } from "lucide-react";
-import { ContactInfo } from "../../lib/useContactInfo";
+import { Save, Plus, Trash2 } from "lucide-react";
+import { ContactInfo, LocationInfo } from "../../lib/useContactInfo";
 
 const DEFAULT_CONTACT_INFO: ContactInfo = {
   phone: "+90 530 899 51 85",
-  email: "info@ruya.com",
-  address: "الريحانية، هاتاي / تركيا",
+  locations: [
+    { name: "الفرع الرئيسي", address: "الريحانية، هاتاي / تركيا" }
+  ],
   instagram: "#",
   facebook: "#",
   twitter: "#",
   whatsapp: "+90 530 899 51 85",
   footerText: "نقدم حلولاً إبداعية في عالم التصميم والطباعة، حيث نجمع بين الخبرة والابتكار لنضع علامتك التجارية في الصدارة.",
-  workingHours: {
-    weekdays: "9:00 ص - 6:00 م",
-    saturday: "10:00 ص - 4:00 م",
-    friday: "مغلق",
-  },
 };
 
 export default function ContactAdmin() {
@@ -70,6 +66,25 @@ export default function ContactAdmin() {
     });
   };
 
+  const handleAddLocation = () => {
+    setFormData({
+      ...formData,
+      locations: [...(formData.locations || []), { name: "", address: "" }],
+    });
+  };
+
+  const handleLocationChange = (index: number, field: keyof LocationInfo, value: string) => {
+    const updatedLocations = [...(formData.locations || [])];
+    updatedLocations[index] = { ...updatedLocations[index], [field]: value };
+    setFormData({ ...formData, locations: updatedLocations });
+  };
+
+  const handleRemoveLocation = (index: number) => {
+    const updatedLocations = [...(formData.locations || [])];
+    updatedLocations.splice(index, 1);
+    setFormData({ ...formData, locations: updatedLocations });
+  };
+
   if (loading) {
     return <div className="text-white">جاري التحميل...</div>;
   }
@@ -99,20 +114,6 @@ export default function ContactAdmin() {
 
             <div className="space-y-2">
               <label className="text-sm font-bold text-gray-300">
-                البريد الإلكتروني
-              </label>
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-ruya-yellow"
-                dir="ltr"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-bold text-gray-300">
                 رقم الواتساب (بالصيغة الدولية)
               </label>
               <input
@@ -126,15 +127,56 @@ export default function ContactAdmin() {
               />
             </div>
 
-            <div className="space-y-2">
-              <label className="text-sm font-bold text-gray-300">العنوان</label>
-              <input
-                type="text"
-                name="address"
-                value={formData.address}
-                onChange={handleChange}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-ruya-yellow"
-              />
+            <div className="space-y-4 md:col-span-2">
+              <div className="flex justify-between items-center border-b border-white/10 pb-2">
+                <h3 className="text-lg font-bold text-ruya-yellow">المواقع والفروع</h3>
+                <button
+                  type="button"
+                  onClick={handleAddLocation}
+                  className="bg-white/10 hover:bg-white/20 text-white p-2 rounded-lg transition-colors flex items-center gap-2 text-sm"
+                >
+                  <Plus className="w-4 h-4" />
+                  إضافة فرع جديد
+                </button>
+              </div>
+              
+              <div className="space-y-4">
+                {formData.locations?.map((loc, index) => (
+                  <div key={index} className="flex flex-col md:flex-row gap-4 bg-white/5 p-4 rounded-xl border border-white/5 relative">
+                    <div className="flex-1 space-y-2">
+                      <label className="text-sm font-bold text-gray-300">المدينة أو اسم الفرع</label>
+                      <input
+                        type="text"
+                        value={loc.name}
+                        onChange={(e) => handleLocationChange(index, 'name', e.target.value)}
+                        placeholder="مثل: اسطنبول أو الفرع الرئيسي"
+                        className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-2 text-white focus:outline-none focus:border-ruya-yellow"
+                      />
+                    </div>
+                    <div className="flex-[2] space-y-2">
+                      <label className="text-sm font-bold text-gray-300">العنوان التفصيلي</label>
+                      <input
+                        type="text"
+                        value={loc.address}
+                        onChange={(e) => handleLocationChange(index, 'address', e.target.value)}
+                        placeholder="العنوان الكامل للفرع"
+                        className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-2 text-white focus:outline-none focus:border-ruya-yellow"
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveLocation(index)}
+                      className="absolute top-4 left-4 md:static md:mt-8 p-2 bg-red-500/20 text-red-400 hover:bg-red-500 hover:text-white rounded-lg transition-colors"
+                      title="حذف الفرع"
+                    >
+                      <Trash2 className="w-5 h-5" />
+                    </button>
+                  </div>
+                ))}
+                {(!formData.locations || formData.locations.length === 0) && (
+                  <p className="text-gray-400 text-sm italic">لم يتم إضافة أي فروق، يرجى إضافة فرع واحد على الأقل.</p>
+                )}
+              </div>
             </div>
 
             <div className="space-y-2">
@@ -189,71 +231,6 @@ export default function ContactAdmin() {
                 onChange={handleChange}
                 className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-ruya-yellow h-24"
               />
-            </div>
-
-            <div className="space-y-4 md:col-span-2">
-              <h3 className="text-lg font-bold text-ruya-yellow border-b border-white/10 pb-2">
-                ساعات العمل
-              </h3>
-              <div className="grid md:grid-cols-3 gap-4">
-                <div className="space-y-2">
-                  <label className="text-sm font-bold text-gray-300">
-                    الأحد - الخميس
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.workingHours?.weekdays || ""}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        workingHours: {
-                          ...formData.workingHours,
-                          weekdays: e.target.value,
-                        },
-                      })
-                    }
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-ruya-yellow"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-bold text-gray-300">
-                    السبت
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.workingHours?.saturday || ""}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        workingHours: {
-                          ...formData.workingHours,
-                          saturday: e.target.value,
-                        },
-                      })
-                    }
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-ruya-yellow"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-bold text-gray-300">
-                    الجمعة
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.workingHours?.friday || ""}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        workingHours: {
-                          ...formData.workingHours,
-                          friday: e.target.value,
-                        },
-                      })
-                    }
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-ruya-yellow"
-                  />
-                </div>
-              </div>
             </div>
           </div>
 

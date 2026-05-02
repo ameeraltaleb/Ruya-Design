@@ -65,39 +65,44 @@ export default function Contact() {
             </p>
 
             <div className="space-y-8">
-              {[
-                { icon: Phone, label: "رقم الهاتف", value: contactInfo.phone },
-                {
-                  icon: Mail,
-                  label: "البريد الإلكتروني",
-                  value: contactInfo.email,
-                },
-                {
-                  icon: MapPin,
-                  label: "الموقع",
-                  value: contactInfo.address,
-                },
-              ].map((item, index) => (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.1 }}
+                className="flex items-center gap-6"
+              >
+                <div className="w-12 h-12 bg-ruya-bg text-ruya-purple rounded-xl flex items-center justify-center flex-shrink-0">
+                  <Phone size={24} />
+                </div>
+                <div>
+                  <h4 className="text-sm text-gray-500 font-bold mb-1">
+                    رقم الهاتف
+                  </h4>
+                  <p className="text-xl font-bold text-ruya-purple" dir="auto">
+                    {contactInfo.phone}
+                  </p>
+                </div>
+              </motion.div>
+
+              {contactInfo.locations?.map((loc, index) => (
                 <motion.div
-                  key={item.label}
+                  key={index}
                   initial={{ opacity: 0, y: 10 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ delay: index * 0.1 }}
+                  transition={{ delay: 0.2 + (index * 0.1) }}
                   className="flex items-center gap-6"
                 >
                   <div className="w-12 h-12 bg-ruya-bg text-ruya-purple rounded-xl flex items-center justify-center flex-shrink-0">
-                    <item.icon size={24} />
+                    <MapPin size={24} />
                   </div>
                   <div>
                     <h4 className="text-sm text-gray-500 font-bold mb-1">
-                      {item.label}
+                      {loc.name || "العنوان"}
                     </h4>
-                    <p
-                      className="text-xl font-bold text-ruya-purple"
-                      dir="auto"
-                    >
-                      {item.value}
+                    <p className="text-xl font-bold text-ruya-purple" dir="auto">
+                      {loc.address}
                     </p>
                   </div>
                 </motion.div>

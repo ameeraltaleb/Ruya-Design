@@ -77,7 +77,7 @@ export default function App() {
 
       <footer className="bg-ruya-purple text-white py-12 border-t border-white/10 text-right">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid md:grid-cols-3 gap-12 mb-12">
+          <div className="grid md:grid-cols-2 gap-12 mb-12">
             <div>
               <div className="mb-6 flex justify-end">
                 {logoUrl ? (
@@ -150,28 +150,6 @@ export default function App() {
                     </a>
                   </li>
                 )}
-              </ul>
-            </div>
-
-            <div>
-              <h4 className="text-xl font-bold mb-6 text-ruya-yellow">
-                ساعات العمل
-              </h4>
-              <ul className="space-y-4 text-gray-400">
-                <li className="flex justify-between">
-                  <span>الأحد - الخميس</span>
-                  <span>{contactInfo.workingHours?.weekdays}</span>
-                </li>
-                <li className="flex justify-between">
-                  <span>السبت</span>
-                  <span>{contactInfo.workingHours?.saturday}</span>
-                </li>
-                <li className="flex justify-between">
-                  <span>الجمعة</span>
-                  <span className="text-ruya-yellow font-bold text-sm bg-ruya-yellow/10 px-2 py-0.5 rounded">
-                    {contactInfo.workingHours?.friday}
-                  </span>
-                </li>
               </ul>
             </div>
           </div>
