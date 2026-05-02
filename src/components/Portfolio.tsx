@@ -104,7 +104,7 @@ export default function Portfolio() {
             </div>
 
             {/* Masonry Project Grid */}
-            <div className="columns-1 sm:columns-2 md:columns-3 lg:columns-4 gap-4 sm:gap-6 space-y-4 sm:space-y-6">
+            <div className="columns-2 md:columns-3 lg:columns-4 gap-2 sm:gap-6 space-y-2 sm:space-y-6">
               <AnimatePresence mode="popLayout">
                 {filteredProjects.map((project) => (
                   <motion.div
@@ -114,10 +114,10 @@ export default function Portfolio() {
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.9 }}
                     transition={{ duration: 0.4 }}
-                    className="group relative bg-slate-200 rounded-[24px] overflow-hidden shadow-lg border-2 sm:border-4 border-white cursor-pointer break-inside-avoid inline-block w-full"
+                    className="group relative bg-slate-200 rounded-xl sm:rounded-[24px] overflow-hidden shadow-lg border-2 sm:border-4 border-white cursor-pointer break-inside-avoid inline-block w-full"
                     onClick={() => setSelectedProject(project)}
                   >
-                    <div className="relative z-0 bg-slate-100 flex items-center justify-center min-h-[150px]">
+                    <div className="relative z-0 bg-slate-100 flex items-center justify-center min-h-[100px] sm:min-h-[150px]">
                       <img
                         src={project.images && project.images.length > 0 ? project.images[0] : project.image}
                         alt={project.title}
@@ -135,11 +135,11 @@ export default function Portfolio() {
                     )}
                     <div className="absolute inset-0 bg-gradient-to-t from-ruya-purple/90 via-ruya-purple/20 to-transparent opacity-0 z-10 transition-opacity duration-300 group-hover:opacity-100" />
 
-                    <div className="absolute bottom-6 right-6 left-6 text-white z-20 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 text-right">
-                      <h3 className="text-xl sm:text-2xl font-black mb-1 drop-shadow-md">
+                    <div className="absolute bottom-2 sm:bottom-6 right-2 sm:right-6 left-2 sm:left-6 text-white z-20 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 text-right">
+                      <h3 className="text-sm sm:text-2xl font-black mb-1 drop-shadow-md">
                         {project.title}
                       </h3>
-                      <p className="text-xs sm:text-sm text-ruya-yellow font-bold uppercase tracking-widest drop-shadow-md">
+                      <p className="text-[10px] sm:text-sm text-ruya-yellow font-bold uppercase tracking-widest drop-shadow-md">
                         {project.category}
                       </p>
                     </div>
