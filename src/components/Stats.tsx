@@ -39,6 +39,8 @@ export default function Stats() {
           src="https://images.unsplash.com/photo-1558655146-d09347e92766?q=80&w=2664&auto=format&fit=crop"
           alt="بدء العمل"
           className="w-full h-full object-cover grayscale"
+          loading="lazy"
+          decoding="async"
         />
         <div className="absolute inset-0 bg-ruya-purple/90" />
       </div>

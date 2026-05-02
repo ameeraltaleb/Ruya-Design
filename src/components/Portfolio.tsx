@@ -104,7 +104,7 @@ export default function Portfolio() {
             </div>
 
             {/* Masonry Project Grid */}
-            <div className="columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6">
+            <div className="columns-1 sm:columns-2 md:columns-3 lg:columns-4 gap-4 sm:gap-6 space-y-4 sm:space-y-6">
               <AnimatePresence mode="popLayout">
                 {filteredProjects.map((project) => (
                   <motion.div
@@ -114,15 +114,17 @@ export default function Portfolio() {
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.9 }}
                     transition={{ duration: 0.4 }}
-                    className="group relative bg-slate-200 rounded-[30px] overflow-hidden shadow-xl border-4 border-white cursor-pointer break-inside-avoid inline-block w-full"
+                    className="group relative bg-slate-200 rounded-[24px] overflow-hidden shadow-lg border-2 sm:border-4 border-white cursor-pointer break-inside-avoid inline-block w-full"
                     onClick={() => setSelectedProject(project)}
                   >
-                    <div className="relative z-0 bg-slate-100 flex items-center justify-center min-h-[200px]">
+                    <div className="relative z-0 bg-slate-100 flex items-center justify-center min-h-[150px]">
                       <img
                         src={project.images && project.images.length > 0 ? project.images[0] : project.image}
                         alt={project.title}
                         className="w-full h-auto object-cover transform group-hover:scale-105 transition-transform duration-700"
                         referrerPolicy="no-referrer"
+                        loading="lazy"
+                        decoding="async"
                       />
                     </div>
                     {project.images && project.images.length > 1 && (
@@ -189,7 +191,7 @@ export default function Portfolio() {
                                key={i} 
                                className="w-full bg-white p-2 sm:p-4 rounded-2xl shadow-md border border-slate-100"
                              >
-                               <img src={img} alt={`${selectedProject.title} - صورة ${i + 1}`} className="w-full h-auto rounded-xl" loading="lazy" />
+                               <img src={img} alt={`${selectedProject.title} - صورة ${i + 1}`} className="w-full h-auto rounded-xl" loading="lazy" decoding="async" />
                              </motion.div>
                            ))
                          ) : (
@@ -198,7 +200,7 @@ export default function Portfolio() {
                              animate={{ opacity: 1, y: 0 }}
                              className="w-full bg-white p-2 sm:p-4 rounded-2xl shadow-md border border-slate-100"
                            >
-                             <img src={selectedProject.image} alt={selectedProject.title} className="w-full h-auto rounded-xl" loading="lazy" />
+                             <img src={selectedProject.image} alt={selectedProject.title} className="w-full h-auto rounded-xl" loading="lazy" decoding="async" />
                            </motion.div>
                          )}
                        </div>

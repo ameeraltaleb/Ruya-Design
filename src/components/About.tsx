@@ -91,6 +91,8 @@ export default function About() {
                   src={data.image_url}
                   alt="من نحن"
                   className="w-full h-full object-cover"
+                  loading="lazy"
+                  decoding="async"
                 />
               </div>
               {/* Decorative elements */}

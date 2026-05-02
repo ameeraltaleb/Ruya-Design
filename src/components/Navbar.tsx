@@ -48,6 +48,8 @@ export default function Navbar() {
                     src={logoUrl}
                     alt="Logo"
                     className="h-16 w-auto object-contain drop-shadow-sm"
+                    loading="eager"
+                    decoding="async"
                   />
                 ) : (
                   <span className="text-3xl font-extrabold text-white tracking-wider font-sans">

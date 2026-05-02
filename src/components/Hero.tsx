@@ -163,6 +163,8 @@ export default function Hero() {
               className="w-full h-full object-cover transform scale-110"
               alt="Creative Space"
               referrerPolicy="no-referrer"
+              decoding="async"
+              loading="eager"
             />
             <div className="absolute bottom-10 right-10 left-10 text-white z-20 text-left">
               <h3 className="text-3xl font-black mb-2 uppercase">

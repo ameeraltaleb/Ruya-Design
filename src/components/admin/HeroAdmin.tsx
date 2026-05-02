@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { supabase } from "../../lib/supabase";
-import { Monitor } from "lucide-react";
+import { Monitor, UploadCloud } from "lucide-react";
 
 interface HeroData {
   subtitle: string;
@@ -30,6 +30,7 @@ export default function HeroAdmin() {
   const [data, setData] = useState<HeroData>(DEFAULT_HERO);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const fetchHero = async () => {
@@ -71,6 +72,23 @@ export default function HeroAdmin() {
     } finally {
       setSaving(false);
     }
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 2 * 1024 * 1024) {
+      alert("حجم الصورة كبير جداً. الحد الأقصى هو 2 ميجابايت.");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const base64String = event.target?.result as string;
+      setData(prev => ({ ...prev, image_url: base64String }));
+    };
+    reader.readAsDataURL(file);
   };
 
   if (loading) return <div>جاري التحميل...</div>;
@@ -178,8 +196,33 @@ export default function HeroAdmin() {
 
           <div className="border-t border-white/10 pt-6">
             <label className="block text-sm font-medium text-gray-300 mb-2">
-              رابط صورة الواجهة (URL)
+              صورة الواجهة
             </label>
+
+            <input
+              type="file"
+              accept="image/png, image/jpeg, image/webp"
+              onChange={handleImageChange}
+              ref={fileInputRef}
+              className="hidden"
+            />
+
+            <div className="flex items-center gap-4 mb-4">
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className="flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white px-4 py-3 rounded-xl transition-colors shrink-0"
+              >
+                <UploadCloud className="w-5 h-5" />
+                <span>اختر صورة</span>
+              </button>
+
+              <div className="flex-1 text-sm text-gray-400">
+                الحد الأقصى للحجم: 2MB
+              </div>
+            </div>
+
+            <p className="text-sm text-gray-400 mb-2">أو أدخل رابط الصورة (URL):</p>
             <input
               type="url"
               name="image_url"
