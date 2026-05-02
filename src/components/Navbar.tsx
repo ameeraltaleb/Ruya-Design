@@ -55,11 +55,7 @@ export default function Navbar() {
                   </span>
                 )
               ) : (
-                <div className="h-16 w-40 flex items-center justify-center border-2 border-dashed border-white/10 rounded-xl bg-white/5">
-                  <span className="text-white/20 text-[10px] font-bold">
-                    LOGO SPACE
-                  </span>
-                </div>
+                <div className="h-16 w-40"></div>
               )}
             </a>
           </div>

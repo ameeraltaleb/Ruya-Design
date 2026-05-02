@@ -54,11 +54,7 @@ export default function App() {
                     </span>
                   )
                 ) : (
-                  <div className="h-16 w-40 flex items-center justify-center border-2 border-dashed border-white/10 rounded-xl bg-white/5 ml-auto">
-                    <span className="text-white/20 text-[10px] font-bold">
-                      LOGO SPACE
-                    </span>
-                  </div>
+                  <div className="h-16 w-40 ml-auto"></div>
                 )}
               </div>
               <p className="text-gray-400 leading-relaxed max-w-sm mr-0 ml-auto">
