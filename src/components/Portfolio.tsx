@@ -1,8 +1,7 @@
 import { motion, AnimatePresence } from "motion/react";
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
-import Lightbox from "yet-another-react-lightbox";
-import "yet-another-react-lightbox/styles.css";
+import { X } from "lucide-react";
 
 interface Project {
   id: string;
@@ -19,9 +18,17 @@ export default function Portfolio() {
   const [services, setServices] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   
-  const [lightboxOpen, setLightboxOpen] = useState(false);
-  const [lightboxIndex, setLightboxIndex] = useState(0);
-  const [lightboxSlides, setLightboxSlides] = useState<{src: string}[]>([]);
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+
+  useEffect(() => {
+    // Prevent scrolling when modal is open
+    if (selectedProject) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => { document.body.style.overflow = 'unset'; };
+  }, [selectedProject]);
 
   useEffect(() => {
     const fetchPortfolio = async () => {
@@ -52,21 +59,6 @@ export default function Portfolio() {
     activeCategory === "الكل"
       ? projects
       : projects.filter((project) => project.category === activeCategory);
-
-  const openLightbox = (project: Project) => {
-    let slides: {src: string}[] = [];
-    if (project.images && project.images.length > 0) {
-      slides = project.images.map(img => ({ src: img }));
-    } else if (project.image) {
-      slides = [{ src: project.image }];
-    }
-    
-    if (slides.length > 0) {
-      setLightboxSlides(slides);
-      setLightboxIndex(0);
-      setLightboxOpen(true);
-    }
-  };
 
   return (
     <section id="portfolio" className="py-16 lg:py-24 bg-ruya-bg">
@@ -111,40 +103,41 @@ export default function Portfolio() {
               ))}
             </div>
 
-            {/* Project Grid */}
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10">
+            {/* Masonry Project Grid */}
+            <div className="columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6">
               <AnimatePresence mode="popLayout">
                 {filteredProjects.map((project) => (
                   <motion.div
                     key={project.id}
-                    layout
+                    layout="position"
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.9 }}
                     transition={{ duration: 0.4 }}
-                    className="group relative bg-slate-200 h-[400px] rounded-[40px] overflow-hidden shadow-2xl border-8 border-white cursor-pointer"
-                    onClick={() => openLightbox(project)}
+                    className="group relative bg-slate-200 rounded-[30px] overflow-hidden shadow-xl border-4 border-white cursor-pointer break-inside-avoid inline-block w-full"
+                    onClick={() => setSelectedProject(project)}
                   >
-                    <div className="absolute inset-0 z-0 bg-slate-100">
+                    <div className="relative z-0 bg-slate-100 flex items-center justify-center min-h-[200px]">
                       <img
                         src={project.images && project.images.length > 0 ? project.images[0] : project.image}
                         alt={project.title}
-                        className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-1000"
+                        className="w-full h-auto object-cover transform group-hover:scale-105 transition-transform duration-700"
                         referrerPolicy="no-referrer"
                       />
                     </div>
                     {project.images && project.images.length > 1 && (
-                      <div className="absolute top-4 right-4 z-20 bg-black/50 backdrop-blur-md text-white text-xs font-bold px-3 py-1.5 rounded-full border border-white/20">
+                      <div className="absolute top-4 right-4 z-20 bg-black/60 backdrop-blur-md text-white text-xs font-bold px-3 py-1.5 rounded-full border border-white/20 shadow-sm flex items-center gap-1.5">
+                        <span className="w-2 h-2 rounded-full bg-ruya-yellow animate-pulse"></span>
                         {project.images.length} صور
                       </div>
                     )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-ruya-purple via-transparent to-transparent opacity-80 z-10 transition-opacity group-hover:opacity-90" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-ruya-purple/90 via-ruya-purple/20 to-transparent opacity-0 z-10 transition-opacity duration-300 group-hover:opacity-100" />
 
-                    <div className="absolute bottom-8 right-8 left-8 text-white z-20 translate-y-4 group-hover:translate-y-0 transition-transform duration-500 text-right">
-                      <h3 className="text-2xl font-black mb-1">
+                    <div className="absolute bottom-6 right-6 left-6 text-white z-20 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 text-right">
+                      <h3 className="text-xl sm:text-2xl font-black mb-1 drop-shadow-md">
                         {project.title}
                       </h3>
-                      <p className="text-sm text-ruya-yellow font-bold uppercase tracking-widest">
+                      <p className="text-xs sm:text-sm text-ruya-yellow font-bold uppercase tracking-widest drop-shadow-md">
                         {project.category}
                       </p>
                     </div>
@@ -153,12 +146,67 @@ export default function Portfolio() {
               </AnimatePresence>
             </div>
             
-            <Lightbox
-              open={lightboxOpen}
-              close={() => setLightboxOpen(false)}
-              index={lightboxIndex}
-              slides={lightboxSlides}
-            />
+            {/* Vertical Scroll Modal for Project Images */}
+            <AnimatePresence>
+              {selectedProject && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center pt-24 pb-4 px-4 sm:p-6 sm:pt-24 backdrop-blur-xl bg-black/60">
+                  <div className="absolute inset-0 z-0 bg-black/40" onClick={() => setSelectedProject(null)} />
+                  <motion.div
+                    initial={{ opacity: 0, y: 50, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 20, scale: 0.95 }}
+                    transition={{ type: "spring", damping: 25, stiffness: 300 }}
+                    className="w-full max-w-5xl max-h-[90vh] sm:max-h-[85vh] bg-[#f8f9fa] rounded-[30px] overflow-hidden shadow-2xl flex flex-col relative z-10 border border-white/30"
+                  >
+                    {/* Modal Header */}
+                    <div className="p-5 sm:p-6 border-b border-white flex justify-between items-start bg-white/80 backdrop-blur-md sticky top-0 z-20 shadow-sm">
+                       <div className="text-right">
+                          <h3 className="text-2xl sm:text-3xl font-black text-ruya-purple">{selectedProject.title}</h3>
+                          <div className="mt-2 inline-flex items-center gap-2">
+                             <span className="text-ruya-yellow font-bold text-xs sm:text-sm px-4 py-1.5 bg-ruya-yellow/10 rounded-full">
+                               {selectedProject.category}
+                             </span>
+                          </div>
+                       </div>
+                       <button 
+                         onClick={() => setSelectedProject(null)} 
+                         className="p-2 sm:p-3 bg-slate-100 hover:bg-red-50 hover:text-red-500 rounded-full transition-colors flex-shrink-0"
+                       >
+                         <X className="w-5 h-5 sm:w-6 sm:h-6" />
+                       </button>
+                    </div>
+
+                    {/* Modal Body (Scrollable Images) */}
+                    <div className="overflow-y-auto p-4 sm:p-8 custom-scrollbar bg-slate-50 flex-1">
+                       <div className="flex flex-col gap-6 sm:gap-10 max-w-4xl mx-auto">
+                         {selectedProject.images && selectedProject.images.length > 0 ? (
+                           selectedProject.images.map((img, i) => (
+                             <motion.div 
+                               initial={{ opacity: 0, y: 20 }}
+                               whileInView={{ opacity: 1, y: 0 }}
+                               viewport={{ once: true, margin: "-50px" }}
+                               transition={{ duration: 0.5, delay: i * 0.1 }}
+                               key={i} 
+                               className="w-full bg-white p-2 sm:p-4 rounded-2xl shadow-md border border-slate-100"
+                             >
+                               <img src={img} alt={`${selectedProject.title} - صورة ${i + 1}`} className="w-full h-auto rounded-xl" loading="lazy" />
+                             </motion.div>
+                           ))
+                         ) : (
+                           <motion.div
+                             initial={{ opacity: 0, y: 20 }}
+                             animate={{ opacity: 1, y: 0 }}
+                             className="w-full bg-white p-2 sm:p-4 rounded-2xl shadow-md border border-slate-100"
+                           >
+                             <img src={selectedProject.image} alt={selectedProject.title} className="w-full h-auto rounded-xl" loading="lazy" />
+                           </motion.div>
+                         )}
+                       </div>
+                    </div>
+                  </motion.div>
+                </div>
+              )}
+            </AnimatePresence>
           </>
         )}
       </div>
