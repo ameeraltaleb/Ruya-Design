@@ -11,8 +11,7 @@ import {
   Type,
 } from "lucide-react";
 import { useState, useEffect } from "react";
-import { doc, onSnapshot } from "firebase/firestore";
-import { db } from "../lib/firebase";
+import { supabase } from "../lib/supabase";
 
 interface HeroData {
   subtitle: string;
@@ -26,6 +25,7 @@ interface HeroData {
 }
 
 const DEFAULT_HERO: HeroData = {
+  subtitle: "مرحباً بكم في",
   title_prefix: "رؤيــا",
   title_highlight: "للتصميم",
   slogan: "New World, New Thinking ...",
@@ -41,22 +41,15 @@ export default function Hero() {
   const [data, setData] = useState<HeroData>(DEFAULT_HERO);
 
   useEffect(() => {
-    const docRef = doc(db, "settings", "hero");
-    const unsubscribe = onSnapshot(
-      docRef,
-      (docSnap) => {
-        if (docSnap.exists() && docSnap.data().value) {
-          try {
-            setData(JSON.parse(docSnap.data().value));
-          } catch (e) {}
-        }
-      },
-      (error) => {
-        console.error("Error fetching hero data realtime:", error);
-      },
-    );
-
-    return () => unsubscribe();
+    const fetchHero = async () => {
+      const { data } = await supabase.from('settings').select('value').eq('id', 'hero').single();
+      if (data && data.value) {
+        try {
+          setData(typeof data.value === 'string' ? JSON.parse(data.value) : data.value);
+        } catch (e) {}
+      }
+    };
+    fetchHero();
   }, []);
 
   return (

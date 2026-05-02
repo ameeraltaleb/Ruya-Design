@@ -11,8 +11,7 @@ import {
   PenTool,
   Search,
 } from "lucide-react";
-import { collection, onSnapshot, query, orderBy } from "firebase/firestore";
-import { db } from "../lib/firebase";
+import { supabase } from "../lib/supabase";
 
 const iconMap = {
   Palette: Palette,
@@ -38,25 +37,12 @@ export default function Services() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const q = query(collection(db, "services"), orderBy("createdAt", "asc"));
-    const unsubscribe = onSnapshot(
-      q,
-      (snapshot) => {
-        const data: Service[] = [];
-        snapshot.forEach((doc) => {
-          data.push({ id: doc.id, ...doc.data() } as Service);
-        });
-        // Fallback fallback to constant if empty, but for now we expect empty
-        setServices(data);
-        setLoading(false);
-      },
-      (error) => {
-        console.error("Error fetching services:", error);
-        setLoading(false);
-      },
-    );
-
-    return () => unsubscribe();
+    const fetchServices = async () => {
+      const { data } = await supabase.from('services').select('*').order('created_at', { ascending: true });
+      if (data) setServices(data);
+      setLoading(false);
+    };
+    fetchServices();
   }, []);
 
   return (

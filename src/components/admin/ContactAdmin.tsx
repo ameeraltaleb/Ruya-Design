@@ -1,68 +1,22 @@
 import { useState, useEffect } from "react";
-import { doc, getDoc, setDoc } from "firebase/firestore";
-import { db, auth } from "../../lib/firebase";
+import { supabase } from "../../lib/supabase";
 import { Save } from "lucide-react";
 import { ContactInfo } from "../../lib/useContactInfo";
 
-enum OperationType {
-  CREATE = "create",
-  UPDATE = "update",
-  DELETE = "delete",
-  LIST = "list",
-  GET = "get",
-  WRITE = "write",
-}
-
-interface FirestoreErrorInfo {
-  error: string;
-  operationType: OperationType;
-  path: string | null;
-  authInfo: {
-    userId?: string | null;
-    email?: string | null;
-    emailVerified?: boolean | null;
-    isAnonymous?: boolean | null;
-    tenantId?: string | null;
-    providerInfo?: {
-      providerId?: string | null;
-      email?: string | null;
-    }[];
-  };
-}
-
-function handleFirestoreError(
-  error: unknown,
-  operationType: OperationType,
-  path: string | null,
-) {
-  const errInfo: FirestoreErrorInfo = {
-    error: error instanceof Error ? error.message : String(error),
-    authInfo: {
-      userId: auth.currentUser?.uid,
-      email: auth.currentUser?.email,
-      emailVerified: auth.currentUser?.emailVerified,
-      isAnonymous: auth.currentUser?.isAnonymous,
-      tenantId: auth.currentUser?.tenantId,
-      providerInfo:
-        auth.currentUser?.providerData?.map((provider) => ({
-          providerId: provider.providerId,
-          email: provider.email,
-        })) || [],
-    },
-    operationType,
-    path,
-  };
-  console.error("Firestore Error: ", JSON.stringify(errInfo));
-  throw new Error(JSON.stringify(errInfo));
-}
-
 const DEFAULT_CONTACT_INFO: ContactInfo = {
   phone: "+90 530 899 51 85",
+  email: "info@ruya.com",
   address: "الريحانية، هاتاي / تركيا",
   instagram: "#",
   facebook: "#",
   twitter: "#",
   whatsapp: "+90 530 899 51 85",
+  footerText: "نقدم حلولاً إبداعية في عالم التصميم والطباعة، حيث نجمع بين الخبرة والابتكار لنضع علامتك التجارية في الصدارة.",
+  workingHours: {
+    weekdays: "9:00 ص - 6:00 م",
+    saturday: "10:00 ص - 4:00 م",
+    friday: "مغلق",
+  },
 };
 
 export default function ContactAdmin() {
@@ -73,11 +27,10 @@ export default function ContactAdmin() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const docRef = doc(db, "settings", "contact_info");
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists() && docSnap.data().value) {
+        const { data: docSnap, error } = await supabase.from("settings").select("value").eq("id", "contact_info").single();
+        if (docSnap && docSnap.value) {
           try {
-            const fetched = JSON.parse(docSnap.data().value);
+            const fetched = typeof docSnap.value === 'string' ? JSON.parse(docSnap.value) : docSnap.value;
             setFormData({ ...DEFAULT_CONTACT_INFO, ...fetched });
           } catch (e) {}
         }
@@ -96,19 +49,21 @@ export default function ContactAdmin() {
     setSaving(true);
 
     try {
-      await setDoc(doc(db, "settings", "contact_info"), {
-        value: JSON.stringify(formData),
-        updatedAt: Date.now(),
+      const { error } = await supabase.from("settings").upsert({
+        id: "contact_info",
+        value: formData,
+        updated_at: new Date().toISOString(),
       });
+      if (error) throw error;
       alert("تم حفظ معلومات التواصل بنجاح");
     } catch (error) {
-      handleFirestoreError(error, OperationType.WRITE, "settings/contact_info");
+      console.error(error);
     } finally {
       setSaving(false);
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,

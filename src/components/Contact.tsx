@@ -9,8 +9,7 @@ import {
   Facebook,
   Twitter,
 } from "lucide-react";
-import { collection, addDoc } from "firebase/firestore";
-import { db } from "../lib/firebase";
+import { supabase } from "../lib/supabase";
 import { useContactInfo } from "../lib/useContactInfo";
 
 export default function Contact() {
@@ -27,13 +26,13 @@ export default function Contact() {
     setSuccess(false);
 
     try {
-      await addDoc(collection(db, "messages"), {
+      const { error } = await supabase.from('messages').insert({
         name,
         email,
         message,
-        createdAt: Date.now(),
-        status: "new",
+        status: "new"
       });
+      if (error) throw error;
       setSuccess(true);
       setName("");
       setEmail("");

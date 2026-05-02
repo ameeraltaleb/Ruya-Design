@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
-import { doc, onSnapshot } from "firebase/firestore";
-import { db } from "./firebase";
+import { supabase } from "./supabase";
 
 export interface SectionsVisibility {
   hero: boolean;
@@ -28,26 +27,18 @@ export function useSectionsVisibility() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const docRef = doc(db, "settings", "sections_visibility");
+    const fetchVisibility = async () => {
+      const { data, error } = await supabase.from('settings').select('value').eq('id', 'sections_visibility').single();
+      if (data && data.value) {
+        try {
+          const fetched = typeof data.value === 'string' ? JSON.parse(data.value) : data.value;
+          setVisibility({ ...DEFAULT_VISIBILITY, ...fetched });
+        } catch (e) {}
+      }
+      setLoading(false);
+    };
 
-    const unsubscribe = onSnapshot(
-      docRef,
-      (docSnap) => {
-        if (docSnap.exists() && docSnap.data().value) {
-          try {
-            const fetched = JSON.parse(docSnap.data().value);
-            setVisibility({ ...DEFAULT_VISIBILITY, ...fetched });
-          } catch (e) {}
-        }
-        setLoading(false);
-      },
-      (error) => {
-        console.error("Error fetching sections visibility:", error);
-        setLoading(false);
-      },
-    );
-
-    return () => unsubscribe();
+    fetchVisibility();
   }, []);
 
   return { visibility, loading };

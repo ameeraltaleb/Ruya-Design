@@ -1,8 +1,7 @@
 import { motion } from "motion/react";
 import { CheckCircle2 } from "lucide-react";
 import { useState, useEffect } from "react";
-import { doc, onSnapshot } from "firebase/firestore";
-import { db } from "../lib/firebase";
+import { supabase } from "../lib/supabase";
 
 export default function About() {
   const [data, setData] = useState({
@@ -13,39 +12,29 @@ export default function About() {
   });
 
   useEffect(() => {
-    const docRef = doc(db, "settings", "about");
-    const unsubscribe = onSnapshot(
-      docRef,
-      (docSnap) => {
-        if (docSnap.exists() && docSnap.data().value) {
-          try {
-            setData(JSON.parse(docSnap.data().value));
-          } catch (e) {}
-        } else {
-          // Default
-          setData({
-            title: "من نحن؟",
-            description:
-              'نحن في "رؤية" للتصميم والطباعة لسنا مجرد وكالة دعاية وإعلان، بل نحن شركاء نجاحك. نؤمن بأن كل علامة تجارية لها قصة فريدة تستحق أن تُروى بأفضل صورة ممكنة. نجمع بين الإبداع الفني والخبرة التقنية لنقدم لك حلولاً متكاملة تبرز هوية مشروعك.',
-            features: [
-              "فريق عمل مبدع ومحترف",
-              "أحدث تقنيات الطباعة",
-              "الالتزام بالمواعيد",
-              "أسعار تنافسية",
-              "جودة عالية في التنفيذ",
-              "خدمة عملاء متميزة",
-            ],
-            image_url:
-              "",
-          });
-        }
-      },
-      (error) => {
-        console.error("Error fetching about section realtime:", error);
-      },
-    );
-
-    return () => unsubscribe();
+    const fetchAbout = async () => {
+      const { data: docSnap } = await supabase.from('settings').select('value').eq('id', 'about').single();
+      if (docSnap && docSnap.value) {
+        try {
+          setData(typeof docSnap.value === 'string' ? JSON.parse(docSnap.value) : docSnap.value);
+        } catch (e) {}
+      } else {
+        setData({
+          title: "من نحن؟",
+          description: 'نحن في "رؤية" للتصميم والطباعة لسنا مجرد وكالة دعاية وإعلان، بل نحن شركاء نجاحك. نؤمن بأن كل علامة تجارية لها قصة فريدة تستحق أن تُروى بأفضل صورة ممكنة. نجمع بين الإبداع الفني والخبرة التقنية لنقدم لك حلولاً متكاملة تبرز هوية مشروعك.',
+          features: [
+            "فريق عمل مبدع ومحترف",
+            "أحدث تقنيات الطباعة",
+            "الالتزام بالمواعيد",
+            "أسعار تنافسية",
+            "جودة عالية في التنفيذ",
+            "خدمة عملاء متميزة",
+          ],
+          image_url: "",
+        });
+      }
+    };
+    fetchAbout();
   }, []);
 
   return (

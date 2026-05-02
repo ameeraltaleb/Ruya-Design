@@ -1,13 +1,5 @@
 import { useState, useEffect } from "react";
-import {
-  collection,
-  onSnapshot,
-  addDoc,
-  deleteDoc,
-  doc,
-  updateDoc,
-} from "firebase/firestore";
-import { db, auth } from "../../lib/firebase";
+import { supabase } from "../../lib/supabase";
 import {
   Plus,
   Trash2,
@@ -44,29 +36,6 @@ interface Service {
   createdAt?: number;
 }
 
-enum OperationType {
-  CREATE = "create",
-  UPDATE = "update",
-  DELETE = "delete",
-  LIST = "list",
-  GET = "get",
-  WRITE = "write",
-}
-function handleFirestoreError(
-  error: unknown,
-  operationType: OperationType,
-  path: string | null,
-) {
-  const errInfo = {
-    error: error instanceof Error ? error.message : String(error),
-    authInfo: { userId: auth.currentUser?.uid },
-    operationType,
-    path,
-  };
-  console.error("Firestore Error: ", JSON.stringify(errInfo));
-  throw new Error(JSON.stringify(errInfo));
-}
-
 export default function ServicesAdmin() {
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
@@ -78,59 +47,58 @@ export default function ServicesAdmin() {
   const [icon, setIcon] = useState("Palette");
 
   useEffect(() => {
-    const q = collection(db, "services");
-    const unsubscribe = onSnapshot(
-      q,
-      (snapshot) => {
-        const srvs: Service[] = [];
-        snapshot.forEach((doc) => {
-          srvs.push({ id: doc.id, ...doc.data() } as Service);
-        });
-        srvs.sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
-        setServices(srvs);
-        setLoading(false);
-      },
-      (error) => {
-        handleFirestoreError(error, OperationType.LIST, "services");
-      },
-    );
-
-    return () => unsubscribe();
+    const fetchServices = async () => {
+      const { data, error } = await supabase.from('services').select('*').order('created_at', { ascending: false });
+      if (data) {
+        setServices(data.map((d: any) => ({
+          ...d,
+          createdAt: new Date(d.created_at).getTime(),
+          updatedAt: new Date(d.updated_at).getTime()
+        })));
+      }
+      setLoading(false);
+    };
+    fetchServices();
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const ts = Date.now();
       if (editingId) {
-        const oldSrv = services.find((s) => s.id === editingId);
-        await updateDoc(doc(db, "services", editingId), {
+        await supabase.from('services').update({
           title,
           description,
           icon,
-          createdAt: oldSrv?.createdAt || ts,
-        });
+        }).eq('id', editingId);
       } else {
-        await addDoc(collection(db, "services"), {
+        await supabase.from('services').insert({
           title,
           description,
           icon,
-          createdAt: ts,
         });
+      }
+      // Re-fetch 
+      const { data } = await supabase.from('services').select('*').order('created_at', { ascending: false });
+      if (data) {
+        setServices(data.map((d: any) => ({
+          ...d,
+          createdAt: new Date(d.created_at).getTime(),
+          updatedAt: new Date(d.updated_at).getTime()
+        })));
       }
       closeModal();
     } catch (error) {
       alert("حدث خطأ أثناء حفظ البيانات: " + (error instanceof Error ? error.message : ""));
-      handleFirestoreError(error, OperationType.WRITE, "services");
     }
   };
 
   const handleDelete = async (id: string) => {
     if (confirm("هل أنت متأكد من حذف هذه الخدمة؟")) {
       try {
-        await deleteDoc(doc(db, "services", id));
+        await supabase.from('services').delete().eq('id', id);
+        setServices(services.filter(s => s.id !== id));
       } catch (error) {
-        handleFirestoreError(error, OperationType.DELETE, `services/${id}`);
+        console.error(error);
       }
     }
   };

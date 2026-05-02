@@ -1,12 +1,5 @@
 import { useState, useEffect } from "react";
-import {
-  collection,
-  onSnapshot,
-  doc,
-  deleteDoc,
-  updateDoc,
-} from "firebase/firestore";
-import { db, auth } from "../../lib/firebase";
+import { supabase } from "../../lib/supabase";
 import { Trash2, Mail, MailOpen } from "lucide-react";
 
 interface Message {
@@ -18,60 +11,31 @@ interface Message {
   status: "new" | "read";
 }
 
-enum OperationType {
-  CREATE = "create",
-  UPDATE = "update",
-  DELETE = "delete",
-  LIST = "list",
-  GET = "get",
-  WRITE = "write",
-}
-function handleFirestoreError(
-  error: unknown,
-  operationType: OperationType,
-  path: string | null,
-) {
-  const errInfo = {
-    error: error instanceof Error ? error.message : String(error),
-    authInfo: { userId: auth.currentUser?.uid },
-    operationType,
-    path,
-  };
-  console.error("Firestore Error: ", JSON.stringify(errInfo));
-  throw new Error(JSON.stringify(errInfo));
-}
-
 export default function MessagesAdmin() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const q = collection(db, "messages");
-    const unsubscribe = onSnapshot(
-      q,
-      (snapshot) => {
-        const msgs: Message[] = [];
-        snapshot.forEach((doc) => {
-          msgs.push({ id: doc.id, ...doc.data() } as Message);
-        });
-        msgs.sort((a, b) => b.createdAt - a.createdAt);
-        setMessages(msgs);
-        setLoading(false);
-      },
-      (error) => {
-        handleFirestoreError(error, OperationType.LIST, "messages");
-      },
-    );
-
-    return () => unsubscribe();
+    const fetchMessages = async () => {
+      const { data, error } = await supabase.from('messages').select('*').order('created_at', { ascending: false });
+      if (data) {
+        setMessages(data.map((d: any) => ({
+          ...d,
+          createdAt: new Date(d.created_at).getTime()
+        })));
+      }
+      setLoading(false);
+    };
+    fetchMessages();
   }, []);
 
   const handleDelete = async (id: string) => {
     if (confirm("هل أنت متأكد من حذف هذه الرسالة؟")) {
       try {
-        await deleteDoc(doc(db, "messages", id));
+        await supabase.from('messages').delete().eq('id', id);
+        setMessages(messages.filter((m) => m.id !== id));
       } catch (error) {
-        handleFirestoreError(error, OperationType.DELETE, `messages/${id}`);
+        console.error(error);
       }
     }
   };
@@ -79,11 +43,10 @@ export default function MessagesAdmin() {
   const toggleStatus = async (msg: Message) => {
     try {
       const newStatus = msg.status === "new" ? "read" : "new";
-      await updateDoc(doc(db, "messages", msg.id), {
-        status: newStatus,
-      });
+      await supabase.from('messages').update({ status: newStatus }).eq('id', msg.id);
+      setMessages(messages.map((m) => m.id === msg.id ? { ...m, status: newStatus } : m));
     } catch (error) {
-      handleFirestoreError(error, OperationType.UPDATE, `messages/${msg.id}`);
+      console.error(error);
     }
   };
 

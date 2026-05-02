@@ -1,19 +1,6 @@
 import { useState, useEffect } from "react";
-import {
-  collection,
-  onSnapshot,
-  doc,
-  setDoc,
-  deleteDoc,
-} from "firebase/firestore";
-import { db, auth } from "../../lib/firebase";
-import { initializeApp } from "firebase/app";
-import {
-  getAuth,
-  createUserWithEmailAndPassword,
-  signOut,
-} from "firebase/auth";
-import firebaseConfig from "../../../firebase-applet-config.json";
+import { supabase } from "../../lib/supabase";
+import { createClient } from "@supabase/supabase-js";
 import { Trash2, UserPlus, Shield, X, ShieldAlert } from "lucide-react";
 
 interface Admin {
@@ -23,32 +10,10 @@ interface Admin {
   createdAt: number;
 }
 
-enum OperationType {
-  CREATE = "create",
-  UPDATE = "update",
-  DELETE = "delete",
-  LIST = "list",
-  GET = "get",
-  WRITE = "write",
-}
-function handleFirestoreError(
-  error: unknown,
-  operationType: OperationType,
-  path: string | null,
-) {
-  const errInfo = {
-    error: error instanceof Error ? error.message : String(error),
-    authInfo: { userId: auth.currentUser?.uid },
-    operationType,
-    path,
-  };
-  console.error("Firestore Error: ", JSON.stringify(errInfo));
-  throw new Error(JSON.stringify(errInfo));
-}
-
-// Create a secondary app to avoid signing out the current admin when creating a new one
-const secondaryApp = initializeApp(firebaseConfig, "SecondaryAppForCreation");
-const secondaryAuth = getAuth(secondaryApp);
+const secondarySupabase = createClient(
+  import.meta.env.VITE_SUPABASE_URL || "",
+  import.meta.env.VITE_SUPABASE_ANON_KEY || ""
+);
 
 export default function AdminsAdmin() {
   const [admins, setAdmins] = useState<Admin[]>([]);
@@ -59,25 +24,26 @@ export default function AdminsAdmin() {
   const [creating, setCreating] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
-  useEffect(() => {
-    const q = collection(db, "admins");
-    const unsubscribe = onSnapshot(
-      q,
-      (snapshot) => {
-        const adms: Admin[] = [];
-        snapshot.forEach((doc) => {
-          adms.push({ id: doc.id, ...doc.data() } as Admin);
-        });
-        adms.sort((a, b) => b.createdAt - a.createdAt);
-        setAdmins(adms);
-        setLoading(false);
-      },
-      (error) => {
-        handleFirestoreError(error, OperationType.LIST, "admins");
-      },
-    );
+  const [currentUser, setCurrentUser] = useState<any>(null);
 
-    return () => unsubscribe();
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setCurrentUser(session?.user || null);
+    });
+
+    const fetchAdmins = async () => {
+      const { data, error } = await supabase.from('admins').select('*').order('created_at', { ascending: false });
+      if (data) {
+        setAdmins(data.map((d: any) => ({
+          id: d.id,
+          email: d.email,
+          role: d.role,
+          createdAt: new Date(d.created_at).getTime()
+        })));
+      }
+      setLoading(false);
+    };
+    fetchAdmins();
   }, []);
 
   const handleCreate = async (e: React.FormEvent) => {
@@ -86,41 +52,48 @@ export default function AdminsAdmin() {
     setErrorMsg("");
 
     try {
-      // 1. Create the user in Firebase Auth using the secondary app
-      const userCredential = await createUserWithEmailAndPassword(
-        secondaryAuth,
-        newEmail,
-        newPassword,
-      );
-      const newUserId = userCredential.user.uid;
+      const { data: signUpData, error: signUpError } = await secondarySupabase.auth.signUp({
+        email: newEmail,
+        password: newPassword,
+      });
 
-      // We must immediately sign out the secondary auth so it doesn't stay logged in
-      await signOut(secondaryAuth);
+      if (signUpError) throw signUpError;
+      
+      const newUserId = signUpData.user?.id;
+      if (!newUserId) throw new Error("Failed to create user ID.");
 
-      // 2. Add the user document to Firestore 'admins' collection
-      await setDoc(doc(db, "admins", newUserId), {
+      await secondarySupabase.auth.signOut();
+
+      const { error: insertError } = await supabase.from('admins').insert({
+        id: newUserId,
         email: newEmail,
         role: "admin",
-        createdAt: Date.now(),
       });
+
+      if (insertError) throw insertError;
+
+      // refresh admins
+      const { data } = await supabase.from('admins').select('*').order('created_at', { ascending: false });
+      if (data) {
+        setAdmins(data.map((d: any) => ({
+          id: d.id,
+          email: d.email,
+          role: d.role,
+          createdAt: new Date(d.created_at).getTime()
+        })));
+      }
 
       closeModal();
     } catch (error: any) {
       console.error(error);
-      if (error.code === "auth/email-already-in-use") {
-        setErrorMsg("البريد الإلكتروني مستخدم مسبقاً.");
-      } else if (error.code === "auth/weak-password") {
-        setErrorMsg("كلمة المرور ضعيفة. يجب أن تكون 6 أحرف على الأقل.");
-      } else {
-        setErrorMsg("حدث خطأ أثناء إضافة المشرف. يرجى التأكد من البيانات.");
-      }
+      setErrorMsg(error.message || "حدث خطأ أثناء إضافة المشرف. يرجى التأكد من البيانات.");
     } finally {
       setCreating(false);
     }
   };
 
   const handleDelete = async (adminId: string) => {
-    if (adminId === auth.currentUser?.uid) {
+    if (adminId === currentUser?.id) {
       alert("لا يمكنك حذف حسابك الحالي!");
       return;
     }
@@ -131,9 +104,10 @@ export default function AdminsAdmin() {
       )
     ) {
       try {
-        await deleteDoc(doc(db, "admins", adminId));
+        await supabase.from('admins').delete().eq('id', adminId);
+        setAdmins(admins.filter(a => a.id !== adminId));
       } catch (error) {
-        handleFirestoreError(error, OperationType.DELETE, `admins/${adminId}`);
+        console.error(error);
       }
     }
   };
@@ -174,7 +148,7 @@ export default function AdminsAdmin() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {admins.map((admin) => {
-          const isCurrentUser = admin.id === auth.currentUser?.uid;
+          const isCurrentUser = admin.id === currentUser?.id;
           return (
             <div
               key={admin.id}

@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
-import { doc, getDoc, setDoc } from "firebase/firestore";
-import { db, auth } from "../../lib/firebase";
+import { supabase } from "../../lib/supabase";
 import { Monitor } from "lucide-react";
 
 interface HeroData {
@@ -27,29 +26,6 @@ const DEFAULT_HERO: HeroData = {
     "https://images.unsplash.com/photo-1626785774573-4b799315345d?auto=format&fit=crop&q=80&w=1000",
 };
 
-enum OperationType {
-  CREATE = "create",
-  UPDATE = "update",
-  DELETE = "delete",
-  LIST = "list",
-  GET = "get",
-  WRITE = "write",
-}
-function handleFirestoreError(
-  error: unknown,
-  operationType: OperationType,
-  path: string | null,
-) {
-  const errInfo = {
-    error: error instanceof Error ? error.message : String(error),
-    authInfo: { userId: auth.currentUser?.uid },
-    operationType,
-    path,
-  };
-  console.error("Firestore Error: ", JSON.stringify(errInfo));
-  throw new Error(JSON.stringify(errInfo));
-}
-
 export default function HeroAdmin() {
   const [data, setData] = useState<HeroData>(DEFAULT_HERO);
   const [loading, setLoading] = useState(true);
@@ -58,16 +34,13 @@ export default function HeroAdmin() {
   useEffect(() => {
     const fetchHero = async () => {
       try {
-        const docRef = doc(db, "settings", "hero");
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          const val = docSnap.data().value;
-          if (val) {
-            setData(JSON.parse(val));
-          }
+        const { data: docSnap, error } = await supabase.from("settings").select("value").eq("id", "hero").single();
+        if (docSnap && docSnap.value) {
+          const val = typeof docSnap.value === 'string' ? JSON.parse(docSnap.value) : docSnap.value;
+          setData(val);
         }
       } catch (error) {
-        handleFirestoreError(error, OperationType.GET, "settings/hero");
+        console.error(error);
       } finally {
         setLoading(false);
       }
@@ -86,13 +59,15 @@ export default function HeroAdmin() {
     e.preventDefault();
     setSaving(true);
     try {
-      await setDoc(doc(db, "settings", "hero"), {
-        value: JSON.stringify(data),
-        updatedAt: Date.now(),
+      const { error } = await supabase.from("settings").upsert({
+        id: "hero",
+        value: data,
+        updated_at: new Date().toISOString(),
       });
+      if (error) throw error;
       alert("تم حفظ إعدادات الواجهة بنجاح");
     } catch (error) {
-      handleFirestoreError(error, OperationType.WRITE, "settings/hero");
+      console.error(error);
     } finally {
       setSaving(false);
     }

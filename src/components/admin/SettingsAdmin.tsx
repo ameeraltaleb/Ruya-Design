@@ -1,34 +1,10 @@
 import { useState, useEffect, useRef } from "react";
-import { doc, getDoc, setDoc } from "firebase/firestore";
-import { db, auth } from "../../lib/firebase";
+import { supabase } from "../../lib/supabase";
 import { UploadCloud, Eye, EyeOff } from "lucide-react";
 import {
   SectionsVisibility,
   DEFAULT_VISIBILITY,
 } from "../../lib/useSectionsVisibility";
-
-enum OperationType {
-  CREATE = "create",
-  UPDATE = "update",
-  DELETE = "delete",
-  LIST = "list",
-  GET = "get",
-  WRITE = "write",
-}
-function handleFirestoreError(
-  error: unknown,
-  operationType: OperationType,
-  path: string | null,
-) {
-  const errInfo = {
-    error: error instanceof Error ? error.message : String(error),
-    authInfo: { userId: auth.currentUser?.uid },
-    operationType,
-    path,
-  };
-  console.error("Firestore Error: ", JSON.stringify(errInfo));
-  throw new Error(JSON.stringify(errInfo));
-}
 
 export default function SettingsAdmin() {
   const [logoUrl, setLogoUrl] = useState("");
@@ -42,18 +18,18 @@ export default function SettingsAdmin() {
   useEffect(() => {
     const fetchSettings = async () => {
       try {
-        const logoDoc = await getDoc(doc(db, "settings", "logo"));
-        if (logoDoc.exists()) {
-          setLogoUrl(logoDoc.data().value || "");
+        const { data: logoDoc } = await supabase.from("settings").select("value").eq("id", "logo").single();
+        if (logoDoc && logoDoc.value) {
+          setLogoUrl(typeof logoDoc.value === 'string' ? logoDoc.value : String(logoDoc.value));
         }
 
-        const visDoc = await getDoc(doc(db, "settings", "sections_visibility"));
-        if (visDoc.exists() && visDoc.data().value) {
-          const fetched = JSON.parse(visDoc.data().value);
+        const { data: visDoc } = await supabase.from("settings").select("value").eq("id", "sections_visibility").single();
+        if (visDoc && visDoc.value) {
+          const fetched = typeof visDoc.value === 'string' ? JSON.parse(visDoc.value) : visDoc.value;
           setVisibility({ ...DEFAULT_VISIBILITY, ...fetched });
         }
       } catch (error) {
-        handleFirestoreError(error, OperationType.GET, "settings");
+        console.error(error);
       } finally {
         setLoading(false);
       }
@@ -65,13 +41,15 @@ export default function SettingsAdmin() {
     e.preventDefault();
     setSaving(true);
     try {
-      await setDoc(doc(db, "settings", "logo"), {
+      const { error } = await supabase.from("settings").upsert({
+        id: "logo",
         value: logoUrl,
-        updatedAt: Date.now(),
+        updated_at: new Date().toISOString(),
       });
+      if (error) throw error;
       alert("تم حفظ الشعار بنجاح");
     } catch (error) {
-      handleFirestoreError(error, OperationType.WRITE, "settings/logo");
+      console.error(error);
     } finally {
       setSaving(false);
     }
@@ -81,17 +59,15 @@ export default function SettingsAdmin() {
     e.preventDefault();
     setSavingVisibility(true);
     try {
-      await setDoc(doc(db, "settings", "sections_visibility"), {
-        value: JSON.stringify(visibility),
-        updatedAt: Date.now(),
+      const { error } = await supabase.from("settings").upsert({
+        id: "sections_visibility",
+        value: visibility,
+        updated_at: new Date().toISOString(),
       });
+      if (error) throw error;
       alert("تم حفظ إعدادات الأقسام بنجاح");
     } catch (error) {
-      handleFirestoreError(
-        error,
-        OperationType.WRITE,
-        "settings/sections_visibility",
-      );
+      console.error(error);
     } finally {
       setSavingVisibility(false);
     }

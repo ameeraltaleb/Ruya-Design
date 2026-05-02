@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
-import { doc, getDoc, setDoc } from "firebase/firestore";
-import { db, auth } from "../../lib/firebase";
+import { supabase } from "../../lib/supabase";
 import { MessageCircle, Trash2 } from "lucide-react";
 
 export interface TestimonialItem {
@@ -38,26 +37,6 @@ const DEFAULT_TESTIMONIALS: TestimonialItem[] = [
   },
 ];
 
-enum OperationType {
-  GET = "get",
-  WRITE = "write",
-}
-
-function handleFirestoreError(
-  error: unknown,
-  operationType: OperationType,
-  path: string | null,
-) {
-  const errInfo = {
-    error: error instanceof Error ? error.message : String(error),
-    authInfo: { userId: auth.currentUser?.uid },
-    operationType,
-    path,
-  };
-  console.error("Firestore Error: ", JSON.stringify(errInfo));
-  throw new Error(JSON.stringify(errInfo));
-}
-
 export default function TestimonialsAdmin() {
   const [data, setData] = useState<TestimonialItem[]>(DEFAULT_TESTIMONIALS);
   const [loading, setLoading] = useState(true);
@@ -66,16 +45,13 @@ export default function TestimonialsAdmin() {
   useEffect(() => {
     const fetchTestimonials = async () => {
       try {
-        const docRef = doc(db, "settings", "testimonials");
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          const val = docSnap.data().value;
-          if (val) {
-            setData(JSON.parse(val));
-          }
+        const { data: docSnap, error } = await supabase.from("settings").select("value").eq("id", "testimonials").single();
+        if (docSnap && docSnap.value) {
+          const val = typeof docSnap.value === 'string' ? JSON.parse(docSnap.value) : docSnap.value;
+          setData(val);
         }
       } catch (error) {
-        handleFirestoreError(error, OperationType.GET, "settings/testimonials");
+        console.error(error);
       } finally {
         setLoading(false);
       }
@@ -87,13 +63,15 @@ export default function TestimonialsAdmin() {
     e.preventDefault();
     setSaving(true);
     try {
-      await setDoc(doc(db, "settings", "testimonials"), {
-        value: JSON.stringify(data),
-        updatedAt: Date.now(),
+      const { error } = await supabase.from("settings").upsert({
+        id: "testimonials",
+        value: data,
+        updated_at: new Date().toISOString(),
       });
+      if (error) throw error;
       alert("تم حفظ آراء العملاء بنجاح");
     } catch (error) {
-      handleFirestoreError(error, OperationType.WRITE, "settings/testimonials");
+      console.error(error);
     } finally {
       setSaving(false);
     }

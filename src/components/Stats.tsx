@@ -1,8 +1,7 @@
 import { motion } from "motion/react";
 import * as LucideIcons from "lucide-react";
 import { useState, useEffect } from "react";
-import { doc, onSnapshot } from "firebase/firestore";
-import { db } from "../lib/firebase";
+import { supabase } from "../lib/supabase";
 
 export interface StatItem {
   id: number;
@@ -20,22 +19,16 @@ export default function Stats() {
   ]);
 
   useEffect(() => {
-    const docRef = doc(db, "settings", "stats");
-    const unsubscribe = onSnapshot(
-      docRef,
-      (docSnap) => {
-        if (docSnap.exists() && docSnap.data().value) {
-          try {
-            setStats(JSON.parse(docSnap.data().value));
-          } catch (e) {}
-        }
-      },
-      (error) => {
-        console.error("Error fetching stats realtime:", error);
-      },
-    );
+    const fetchStats = async () => {
+      const { data } = await supabase.from('settings').select('value').eq('id', 'stats').single();
+      if (data && data.value) {
+        try {
+          setStats(typeof data.value === 'string' ? JSON.parse(data.value) : data.value);
+        } catch (e) {}
+      }
+    };
 
-    return () => unsubscribe();
+    fetchStats();
   }, []);
 
   return (

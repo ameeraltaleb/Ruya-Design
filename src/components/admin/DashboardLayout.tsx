@@ -12,8 +12,7 @@ import {
   X,
   Phone,
 } from "lucide-react";
-import { auth } from "../../lib/firebase";
-import { onAuthStateChanged, signOut } from "firebase/auth";
+import { supabase } from "../../lib/supabase";
 
 export default function DashboardLayout() {
   const [loading, setLoading] = useState(true);
@@ -22,15 +21,25 @@ export default function DashboardLayout() {
   const location = useLocation();
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (!user) {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!session) {
         navigate("/admin/login");
       } else {
         setLoading(false);
       }
     });
 
-    return () => unsubscribe();
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!session) {
+        navigate("/admin/login");
+      } else {
+        setLoading(false);
+      }
+    });
+
+    return () => subscription.unsubscribe();
   }, [navigate]);
 
   // Close mobile menu when route changes
@@ -39,7 +48,7 @@ export default function DashboardLayout() {
   }, [location.pathname]);
 
   const handleLogout = async () => {
-    await signOut(auth);
+    await supabase.auth.signOut();
     navigate("/admin/login");
   };
 

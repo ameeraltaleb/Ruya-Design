@@ -1,8 +1,7 @@
 import { motion } from "motion/react";
 import { Quote, Star } from "lucide-react";
 import { useState, useEffect } from "react";
-import { doc, onSnapshot } from "firebase/firestore";
-import { db } from "../lib/firebase";
+import { supabase } from "../lib/supabase";
 
 export interface TestimonialItem {
   id: number;
@@ -41,22 +40,15 @@ export default function Testimonials() {
   ]);
 
   useEffect(() => {
-    const docRef = doc(db, "settings", "testimonials");
-    const unsubscribe = onSnapshot(
-      docRef,
-      (docSnap) => {
-        if (docSnap.exists() && docSnap.data().value) {
-          try {
-            setTestimonials(JSON.parse(docSnap.data().value));
-          } catch (e) {}
-        }
-      },
-      (error) => {
-        console.error("Error fetching testimonials realtime:", error);
-      },
-    );
-
-    return () => unsubscribe();
+    const fetchTestimonials = async () => {
+      const { data } = await supabase.from('settings').select('value').eq('id', 'testimonials').single();
+      if (data && data.value) {
+        try {
+          setTestimonials(typeof data.value === 'string' ? JSON.parse(data.value) : data.value);
+        } catch (e) {}
+      }
+    };
+    fetchTestimonials();
   }, []);
 
   return (

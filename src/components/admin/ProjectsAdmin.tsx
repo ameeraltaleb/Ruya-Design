@@ -1,14 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import {
-  collection,
-  onSnapshot,
-  addDoc,
-  deleteDoc,
-  doc,
-  updateDoc,
-} from "firebase/firestore";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { db, auth, storage } from "../../lib/firebase";
+import { supabase } from "../../lib/supabase";
 import { Plus, Trash2, Edit2, X, Upload } from "lucide-react";
 
 interface Project {
@@ -18,29 +9,6 @@ interface Project {
   image?: string;
   images?: string[];
   createdAt?: number;
-}
-
-enum OperationType {
-  CREATE = "create",
-  UPDATE = "update",
-  DELETE = "delete",
-  LIST = "list",
-  GET = "get",
-  WRITE = "write",
-}
-function handleFirestoreError(
-  error: unknown,
-  operationType: OperationType,
-  path: string | null,
-) {
-  const errInfo = {
-    error: error instanceof Error ? error.message : String(error),
-    authInfo: { userId: auth.currentUser?.uid },
-    operationType,
-    path,
-  };
-  console.error("Firestore Error: ", JSON.stringify(errInfo));
-  throw new Error(JSON.stringify(errInfo));
 }
 
 export default function ProjectsAdmin() {
@@ -67,42 +35,24 @@ export default function ProjectsAdmin() {
   ])).filter(Boolean);
 
   useEffect(() => {
-    const qProjects = collection(db, "projects");
-    const unsubscribeProjects = onSnapshot(
-      qProjects,
-      (snapshot) => {
-        const projs: Project[] = [];
-        snapshot.forEach((doc) => {
-          projs.push({ id: doc.id, ...doc.data() } as Project);
-        });
-        projs.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
-        setProjects(projs);
-        setLoading(false);
-      },
-      (error) => {
-        handleFirestoreError(error, OperationType.LIST, "projects");
-      },
-    );
-
-    const qServices = collection(db, "services");
-    const unsubscribeServices = onSnapshot(
-      qServices,
-      (snapshot) => {
-        const servs: {id: string; title: string}[] = [];
-        snapshot.forEach((doc) => {
-          servs.push({ id: doc.id, title: doc.data().title });
-        });
-        setServices(servs);
-      },
-      (error) => {
-        handleFirestoreError(error, OperationType.LIST, "services");
+    const fetchAll = async () => {
+      const { data: projs } = await supabase.from('projects').select('*').order('created_at', { ascending: false });
+      if (projs) {
+        setProjects(projs.map((d: any) => ({
+          ...d,
+          createdAt: new Date(d.created_at).getTime(),
+          updatedAt: new Date(d.updated_at).getTime()
+        })));
       }
-    );
 
-    return () => {
-      unsubscribeProjects();
-      unsubscribeServices();
-    }
+      const { data: servs } = await supabase.from('services').select('id, title');
+      if (servs) {
+        setServices(servs);
+      }
+      setLoading(false);
+    };
+
+    fetchAll();
   }, []);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -123,9 +73,11 @@ export default function ProjectsAdmin() {
     if (imageFiles.length === 0) return [];
     
     const uploadPromises = imageFiles.map(async (file) => {
-      const fileRef = ref(storage, `portfolio/${Date.now()}_${file.name}`);
-      await uploadBytes(fileRef, file);
-      return await getDownloadURL(fileRef);
+      const path = `portfolio/${Date.now()}_${file.name}`;
+      const { data, error } = await supabase.storage.from('uploads').upload(path, file);
+      if (error) throw error;
+      const { data: { publicUrl } } = supabase.storage.from('uploads').getPublicUrl(path);
+      return publicUrl;
     });
 
     return await Promise.all(uploadPromises);
@@ -150,27 +102,33 @@ export default function ProjectsAdmin() {
       const newUploadedUrls = await uploadImagesIfSelected();
       const finalImages = [...existingImages, ...newUploadedUrls];
 
-      const ts = Date.now();
       if (editingId) {
-        const oldProj = projects.find((p) => p.id === editingId);
-        await updateDoc(doc(db, "projects", editingId), {
+        await supabase.from('projects').update({
           title,
           category: finalCategory,
           images: finalImages,
-          createdAt: oldProj?.createdAt || ts,
-        });
+        }).eq('id', editingId);
       } else {
-        await addDoc(collection(db, "projects"), {
+        await supabase.from('projects').insert({
           title,
           category: finalCategory,
           images: finalImages,
-          createdAt: ts,
         });
       }
+
+      // Re-fetch
+      const { data: projs } = await supabase.from('projects').select('*').order('created_at', { ascending: false });
+      if (projs) {
+        setProjects(projs.map((d: any) => ({
+          ...d,
+          createdAt: new Date(d.created_at).getTime(),
+          updatedAt: new Date(d.updated_at).getTime()
+        })));
+      }
+
       closeModal();
     } catch (error) {
       alert("حدث خطأ أثناء حفظ البيانات: " + (error instanceof Error ? error.message : ""));
-      handleFirestoreError(error, OperationType.WRITE, "projects");
     } finally {
       setIsUploading(false);
     }
@@ -179,9 +137,10 @@ export default function ProjectsAdmin() {
   const handleDelete = async (id: string) => {
     if (confirm("هل أنت متأكد من حذف هذا العمل؟")) {
       try {
-        await deleteDoc(doc(db, "projects", id));
+        await supabase.from('projects').delete().eq('id', id);
+        setProjects(projects.filter(p => p.id !== id));
       } catch (error) {
-        handleFirestoreError(error, OperationType.DELETE, `projects/${id}`);
+        console.error(error);
       }
     }
   };

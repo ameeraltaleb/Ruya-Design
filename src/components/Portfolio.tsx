@@ -1,7 +1,6 @@
 import { motion, AnimatePresence } from "motion/react";
 import { useState, useEffect } from "react";
-import { collection, onSnapshot, query, orderBy } from "firebase/firestore";
-import { db } from "../lib/firebase";
+import { supabase } from "../lib/supabase";
 import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
 
@@ -25,42 +24,20 @@ export default function Portfolio() {
   const [lightboxSlides, setLightboxSlides] = useState<{src: string}[]>([]);
 
   useEffect(() => {
-    const qProjects = query(collection(db, "projects"), orderBy("createdAt", "desc"));
-    const unsubscribeProjects = onSnapshot(
-      qProjects,
-      (snapshot) => {
-        const data: Project[] = [];
-        snapshot.forEach((doc) => {
-          data.push({ id: doc.id, ...doc.data() } as Project);
-        });
-        setProjects(data);
-        setLoading(false);
-      },
-      (error) => {
-        console.error("Error fetching projects:", error);
-        setLoading(false);
-      },
-    );
-
-    const qServices = collection(db, "services");
-    const unsubscribeServices = onSnapshot(
-      qServices,
-      (snapshot) => {
-        const data: string[] = [];
-        snapshot.forEach((doc) => {
-          data.push(doc.data().title);
-        });
-        setServices(data);
-      },
-      (error) => {
-        console.error("Error fetching services:", error);
+    const fetchPortfolio = async () => {
+      const { data: projs } = await supabase.from('projects').select('*').order('created_at', { ascending: false });
+      if (projs) {
+        setProjects(projs);
       }
-    );
-
-    return () => {
-      unsubscribeProjects();
-      unsubscribeServices();
-    }
+      
+      const { data: srvs } = await supabase.from('services').select('title');
+      if (srvs) {
+        setServices(srvs.map(s => s.title));
+      }
+      
+      setLoading(false);
+    };
+    fetchPortfolio();
   }, []);
 
   const CATEGORIES = [

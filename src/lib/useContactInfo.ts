@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
-import { doc, onSnapshot } from "firebase/firestore";
-import { db } from "./firebase";
+import { supabase } from "./supabase";
 
 export interface ContactInfo {
   phone: string;
@@ -20,6 +19,7 @@ export interface ContactInfo {
 
 const DEFAULT_CONTACT_INFO: ContactInfo = {
   phone: "+90 530 899 51 85",
+  email: "info@ruya.com",
   address: "الريحانية،هاتاي / تركيا",
   instagram: "#",
   facebook: "#",
@@ -40,26 +40,18 @@ export function useContactInfo() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const docRef = doc(db, "settings", "contact_info");
+    const fetchContact = async () => {
+      const { data, error } = await supabase.from('settings').select('value').eq('id', 'contact_info').single();
+      if (data && data.value) {
+        try {
+          const fetched = typeof data.value === 'string' ? JSON.parse(data.value) : data.value;
+          setContactInfo({ ...DEFAULT_CONTACT_INFO, ...fetched });
+        } catch (e) {}
+      }
+      setLoading(false);
+    };
 
-    const unsubscribe = onSnapshot(
-      docRef,
-      (docSnap) => {
-        if (docSnap.exists() && docSnap.data().value) {
-          try {
-            const fetched = JSON.parse(docSnap.data().value);
-            setContactInfo({ ...DEFAULT_CONTACT_INFO, ...fetched });
-          } catch (e) {}
-        }
-        setLoading(false);
-      },
-      (error) => {
-        console.error("Error fetching contact info realtime:", error);
-        setLoading(false);
-      },
-    );
-
-    return () => unsubscribe();
+    fetchContact();
   }, []);
 
   return { contactInfo, loading };

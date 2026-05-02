@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
-import { doc, getDoc, setDoc } from "firebase/firestore";
-import { db, auth } from "../../lib/firebase";
+import { supabase } from "../../lib/supabase";
 import { Image as ImageIcon, Trash2 } from "lucide-react";
 
 export interface ClientItem {
@@ -16,26 +15,6 @@ const DEFAULT_CLIENTS: string[] = [
   "https://upload.wikimedia.org/wikipedia/commons/0/08/Spotify_logo_without_text.svg",
 ];
 
-enum OperationType {
-  GET = "get",
-  WRITE = "write",
-}
-
-function handleFirestoreError(
-  error: unknown,
-  operationType: OperationType,
-  path: string | null,
-) {
-  const errInfo = {
-    error: error instanceof Error ? error.message : String(error),
-    authInfo: { userId: auth.currentUser?.uid },
-    operationType,
-    path,
-  };
-  console.error("Firestore Error: ", JSON.stringify(errInfo));
-  throw new Error(JSON.stringify(errInfo));
-}
-
 export default function ClientsAdmin() {
   const [data, setData] = useState<ClientItem[]>(
     DEFAULT_CLIENTS.map((url, i) => ({ id: i, url })),
@@ -46,15 +25,14 @@ export default function ClientsAdmin() {
   useEffect(() => {
     const fetchClients = async () => {
       try {
-        const docRef = doc(db, "settings", "clients");
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          const val = docSnap.data().value;
+        const { data: docSnap, error } = await supabase.from("settings").select("value").eq("id", "clients").single();
+        if (docSnap && docSnap.value) {
+          const val = docSnap.value;
           if (val) {
-            const parsed = JSON.parse(val);
+            const parsed = typeof val === 'string' ? JSON.parse(val) : val;
             if (Array.isArray(parsed)) {
               if (typeof parsed[0] === "string") {
-                setData(parsed.map((url, i) => ({ id: Date.now() + i, url })));
+                setData(parsed.map((url: string, i: number) => ({ id: Date.now() + i, url })));
               } else {
                 setData(parsed);
               }
@@ -62,7 +40,7 @@ export default function ClientsAdmin() {
           }
         }
       } catch (error) {
-        handleFirestoreError(error, OperationType.GET, "settings/clients");
+        console.error(error);
       } finally {
         setLoading(false);
       }
@@ -74,13 +52,15 @@ export default function ClientsAdmin() {
     e.preventDefault();
     setSaving(true);
     try {
-      await setDoc(doc(db, "settings", "clients"), {
-        value: JSON.stringify(data),
-        updatedAt: Date.now(),
+      const { error } = await supabase.from("settings").upsert({
+        id: "clients",
+        value: data,
+        updated_at: new Date().toISOString(),
       });
+      if (error) throw error;
       alert("تم حفظ شعارات العملاء بنجاح");
     } catch (error) {
-      handleFirestoreError(error, OperationType.WRITE, "settings/clients");
+      console.error(error);
     } finally {
       setSaving(false);
     }

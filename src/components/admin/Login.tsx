@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../../lib/firebase";
+import { supabase } from "../../lib/supabase";
 import { useNavigate } from "react-router-dom";
 
 export default function Login() {
@@ -16,9 +15,13 @@ export default function Login() {
     setLoading(true);
 
     try {
-      await signInWithEmailAndPassword(auth, email, password);
-      // It is important that the admin document is verified in firestore rules
-      // For now, if firebase auth passes, DashboardLayout handles rules
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      if (signInError) throw signInError;
+      
+      // DashboardLayout handles actual admin verification
       navigate("/admin");
     } catch (err: any) {
       setError("بيانات الدخول غير صحيحة");
