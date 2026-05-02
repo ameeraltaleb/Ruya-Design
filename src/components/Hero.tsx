@@ -166,13 +166,10 @@ export default function Hero() {
               decoding="async"
               loading="eager"
             />
-            <div className="absolute bottom-10 right-10 left-10 text-white z-20 text-left">
+            <div className="absolute bottom-10 right-10 left-10 text-white z-20 text-right">
               <h3 className="text-3xl font-black mb-2 uppercase">
-                Innovative Hub
+                فضاء الإبداع والتميز
               </h3>
-              <p className="text-ruya-yellow font-bold uppercase tracking-widest text-sm">
-                EST. 2024
-              </p>
             </div>
           </motion.div>
         </div>
