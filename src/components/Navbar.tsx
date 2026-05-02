@@ -62,8 +62,8 @@ export default function Navbar() {
             </a>
           </div>
 
-          <div className="hidden md:flex items-center gap-8">
-            <div className="flex items-baseline space-x-8 space-x-reverse">
+          <div className="hidden md:flex items-center gap-6 lg:gap-8">
+            <div className="flex items-center gap-4 lg:gap-8">
               {visibleLinks.map((link) => (
                 <a
                   key={link.name}
