@@ -14,6 +14,24 @@ import {
   Store,
   PenTool,
   Search,
+  Camera,
+  Smartphone,
+  Megaphone,
+  Globe,
+  Code,
+  Cpu,
+  Layers,
+  Type,
+  Image as ImageIcon,
+  Music,
+  Mic,
+  MousePointer,
+  Box,
+  Sparkles,
+  Star,
+  Zap,
+  Share2,
+  Target
 } from "lucide-react";
 
 const AVAILABLE_ICONS = [
@@ -22,10 +40,28 @@ const AVAILABLE_ICONS = [
   { id: "Briefcase", icon: Briefcase, label: "هوية تجارية" },
   { id: "Layout", icon: Layout, label: "تصميم ويب" },
   { id: "Video", icon: Video, label: "مونتاج وفيديو" },
-  { id: "Monitor", icon: Monitor, label: "تطبيقات" },
+  { id: "Monitor", icon: Monitor, label: "أنظمة" },
   { id: "Store", icon: Store, label: "متاجر إلكترونية" },
   { id: "PenTool", icon: PenTool, label: "رسم رقمي" },
-  { id: "Search", icon: Search, label: "تسويق" },
+  { id: "Search", icon: Search, label: "بحث وتحليل" },
+  { id: "Camera", icon: Camera, label: "تصوير" },
+  { id: "Smartphone", icon: Smartphone, label: "تطبيقات هواتف" },
+  { id: "Megaphone", icon: Megaphone, label: "تسويق وحملات" },
+  { id: "Globe", icon: Globe, label: "مواقع عالمية" },
+  { id: "Code", icon: Code, label: "برمجة وتطوير" },
+  { id: "Cpu", icon: Cpu, label: "تقنية الذكاء الاصطناعي" },
+  { id: "Layers", icon: Layers, label: "واجهات وتجربة مستخدم" },
+  { id: "Type", icon: Type, label: "كتابة محتوى" },
+  { id: "ImageIcon", icon: ImageIcon, label: "معالجة صور" },
+  { id: "Music", icon: Music, label: "مؤثرات صوتية" },
+  { id: "Mic", icon: Mic, label: "تعليق صوتي" },
+  { id: "MousePointer", icon: MousePointer, label: "تفاعل ونقرات" },
+  { id: "Box", icon: Box, label: "تصميم منتجات 3D" },
+  { id: "Sparkles", icon: Sparkles, label: "إبداع وتأثيرات" },
+  { id: "Star", icon: Star, label: "تميز وتقييم" },
+  { id: "Zap", icon: Zap, label: "أداء سريع" },
+  { id: "Share2", icon: Share2, label: "شبكات اجتماعية" },
+  { id: "Target", icon: Target, label: "أهداف استراتيجية" },
 ];
 
 interface Service {
@@ -219,7 +255,7 @@ export default function ServicesAdmin() {
                   <label className="block text-sm font-medium text-gray-300 mb-2">
                     الأيقونة
                   </label>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+                  <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2 max-h-60 overflow-y-auto custom-scrollbar p-1">
                     {AVAILABLE_ICONS.map((i) => {
                       const IconComp = i.icon;
                       return (
