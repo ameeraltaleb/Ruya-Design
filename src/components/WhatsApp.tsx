@@ -6,7 +6,7 @@ export default function WhatsApp() {
   const { contactInfo } = useContactInfo();
   // Strip non-numeric characters for WhatsApp URL
   const whatsappNumber = contactInfo.whatsapp.replace(/\D/g, "");
-  const message = "مرحباً رؤية ديزاين، أرغب في الاستفسار عن خدماتكم.";
+  const message = "مرحباً رؤيا ديزاين، أرغب في الاستفسار عن خدماتكم.";
 
   const whatsappUrl = `https://wa.me/${905308995185}?text=${encodeURIComponent(message)}`;
 

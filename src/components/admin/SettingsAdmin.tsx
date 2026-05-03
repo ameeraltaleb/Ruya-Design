@@ -108,7 +108,7 @@ export default function SettingsAdmin() {
               type="text"
               value={logoUrl}
               onChange={(e) => setLogoUrl(e.target.value)}
-              placeholder="رؤية للتصميم أو https://example.com/logo.png"
+              placeholder="رؤيا للتصميم أو https://example.com/logo.png"
               className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-ruya-yellow mb-6 text-left"
               dir="auto"
             />

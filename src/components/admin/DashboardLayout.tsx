@@ -67,6 +67,8 @@ export default function DashboardLayout() {
     { name: "الإحصائيات", href: "/admin/stats", icon: LayoutDashboard },
     { name: "الأعمال (Portfolio)", href: "/admin", icon: ImageIcon },
     { name: "آراء العملاء", href: "/admin/testimonials", icon: MessageSquare },
+    { name: "الوظائف المتاحة", href: "/admin/jobs", icon: LayoutDashboard },
+    { name: "طلبات التوظيف", href: "/admin/applications", icon: Users },
     { name: "تواصل معنا", href: "/admin/contact", icon: Phone },
     { name: "الرسائل", href: "/admin/messages", icon: MessageSquare },
     { name: "المشرفين", href: "/admin/admins", icon: Shield },

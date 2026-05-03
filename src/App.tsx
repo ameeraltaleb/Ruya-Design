@@ -9,6 +9,7 @@ import About from "./components/About";
 import Services from "./components/Services";
 import Portfolio from "./components/Portfolio";
 import Testimonials from "./components/Testimonials";
+import Careers from "./components/Careers";
 import Contact from "./components/Contact";
 import WhatsApp from "./components/WhatsApp";
 import { motion } from "motion/react";
@@ -73,6 +74,7 @@ export default function App() {
         {visibility.services && <Services />}
         {visibility.portfolio && <Portfolio />}
         {visibility.testimonials && <Testimonials />}
+        <Careers />
         {visibility.contact && <Contact />}
       </main>
 
@@ -205,7 +207,7 @@ export default function App() {
 
           <div className="pt-8 border-t border-white/10 flex items-center justify-center gap-4 text-gray-500 text-xs sm:text-sm text-center">
             <p>
-              © {new Date().getFullYear()} <span className="text-white font-bold">رؤية ديزاين (RUYA Design)</span>. جميع الحقوق محفوظة.
+              © {new Date().getFullYear()} <span className="text-white font-bold">رؤيا ديزاين (RUYA Design)</span>. جميع الحقوق محفوظة.
             </p>
           </div>
         </div>
