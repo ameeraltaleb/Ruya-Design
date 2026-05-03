@@ -1,23 +1,10 @@
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- */
-
 import Navbar from "./components/Navbar";
-import Hero from "./components/Hero";
-import About from "./components/About";
-import Services from "./components/Services";
-import Portfolio from "./components/Portfolio";
-import Testimonials from "./components/Testimonials";
-import Contact from "./components/Contact";
-import WhatsApp from "./components/WhatsApp";
+import Careers from "./components/Careers";
 import Footer from "./components/Footer";
-import { useSectionsVisibility } from "./lib/useSectionsVisibility";
+import WhatsApp from "./components/WhatsApp";
 import { useEffect } from "react";
 
-export default function App() {
-  const { visibility } = useSectionsVisibility();
-
+export default function CareersPage() {
   useEffect(() => {
     // Basic protection against casual image theft and layout inspection
     const handleContextMenu = (e: MouseEvent) => {
@@ -62,13 +49,8 @@ export default function App() {
     <div className="min-h-screen bg-ruya-bg overflow-x-hidden">
       <Navbar />
 
-      <main>
-        {visibility.hero && <Hero />}
-        {visibility.about && <About />}
-        {visibility.services && <Services />}
-        {visibility.portfolio && <Portfolio />}
-        {visibility.testimonials && <Testimonials />}
-        {visibility.contact && <Contact />}
+      <main className="pt-24 min-h-screen">
+        <Careers />
       </main>
 
       <Footer />

@@ -12,11 +12,11 @@ export default function Navbar() {
 
   // Filter links based on visibility
   const visibleLinks = NAVBAR_LINKS.filter((link) => {
-    if (link.href === "#home") return visibility.hero;
-    if (link.href === "#about") return visibility.about;
-    if (link.href === "#services") return visibility.services;
-    if (link.href === "#portfolio") return visibility.portfolio;
-    if (link.href === "#contact") return visibility.contact;
+    if (link.href.endsWith("#home")) return visibility.hero;
+    if (link.href.endsWith("#about")) return visibility.about;
+    if (link.href.endsWith("#services")) return visibility.services;
+    if (link.href.endsWith("#portfolio")) return visibility.portfolio;
+    if (link.href.endsWith("#contact")) return visibility.contact;
     return true;
   });
 
@@ -39,7 +39,7 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
         <div className="flex items-center justify-between h-full">
           <div className="flex-shrink-0 flex items-center">
-            <a href="#home" className="flex items-center">
+            <a href="/#home" className="flex items-center">
               {logoUrl ? (
                 logoUrl.startsWith("http") ||
                 logoUrl.startsWith("data:image") ||
@@ -76,7 +76,7 @@ export default function Navbar() {
             </div>
             {visibility.contact && (
               <a
-                href="#contact"
+                href="/#contact"
                 className="bg-ruya-yellow text-ruya-purple px-6 py-2.5 rounded-full font-black text-xs uppercase shadow-[0_4px_0_rgb(200,140,30)] active:translate-y-1 transition-all"
               >
                 تواصل معنا
@@ -114,7 +114,7 @@ export default function Navbar() {
           ))}
           {visibility.contact && (
             <a
-              href="#contact"
+              href="/#contact"
               onClick={() => setIsOpen(false)}
               className="bg-ruya-yellow text-ruya-purple block text-center px-3 py-4 mt-2 rounded-md font-black text-base uppercase shadow-[0_4px_0_rgb(200,140,30)] active:translate-y-1 transition-all"
             >
