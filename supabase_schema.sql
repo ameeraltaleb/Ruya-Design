@@ -62,4 +62,8 @@ CREATE POLICY "Allow public access to settings" ON public.settings FOR ALL USING
 
 -- Enable Storage (Bucket for uploads)
 INSERT INTO storage.buckets (id, name, public) VALUES ('uploads', 'uploads', true) ON CONFLICT DO NOTHING;
-CREATE POLICY "Public Access" ON storage.objects FOR ALL USING (bucket_id = 'uploads');
+DROP POLICY IF EXISTS "Public Access" ON storage.objects;
+CREATE POLICY "Public Read Access" ON storage.objects FOR SELECT USING (bucket_id = 'uploads');
+CREATE POLICY "Public Insert Access" ON storage.objects FOR INSERT WITH CHECK (bucket_id = 'uploads');
+CREATE POLICY "Public Update Access" ON storage.objects FOR UPDATE USING (bucket_id = 'uploads');
+CREATE POLICY "Public Delete Access" ON storage.objects FOR DELETE USING (bucket_id = 'uploads');

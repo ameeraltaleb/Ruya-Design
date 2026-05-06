@@ -73,7 +73,9 @@ export default function ProjectsAdmin() {
     if (imageFiles.length === 0) return [];
     
     const uploadPromises = imageFiles.map(async (file) => {
-      const path = `portfolio/${Date.now()}_${file.name}`;
+      // Replace Arabic and spaces to prevent upload errors in Supabase storage
+      const sanitizedName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
+      const path = `portfolio/${Date.now()}_${sanitizedName}`;
       const { data, error } = await supabase.storage.from('uploads').upload(path, file);
       if (error) throw error;
       const { data: { publicUrl } } = supabase.storage.from('uploads').getPublicUrl(path);
@@ -127,8 +129,10 @@ export default function ProjectsAdmin() {
       }
 
       closeModal();
-    } catch (error) {
-      alert("حدث خطأ أثناء حفظ البيانات: " + (error instanceof Error ? error.message : ""));
+    } catch (error: any) {
+      console.error("Upload error full object:", error);
+      const msg = error?.message || error?.error_description || "خطأ غير معروف";
+      alert("حدث خطأ أثناء حفظ البيانات: " + msg + "\n(التأكد من إعدادات Storage والصلاحيات في Supabase ضروري)");
     } finally {
       setIsUploading(false);
     }

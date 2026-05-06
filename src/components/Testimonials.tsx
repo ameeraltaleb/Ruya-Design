@@ -62,7 +62,7 @@ export default function Testimonials() {
             transition={{ duration: 0.5 }}
           >
             <h2 className="text-3xl md:text-5xl font-bold text-slate-900 mb-6">
-              آراء <span className="text-ruya-purple">شركاء النجاح</span>
+              آراء شركاء النجاح
             </h2>
             <p className="text-gray-600 text-lg max-w-2xl mx-auto">
               كلمات نعتز بها، وقصص نجاح تدفعنا دائماً لتقديم إبداع يفوق التوقعات.
